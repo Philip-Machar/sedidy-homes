@@ -80,11 +80,21 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
             <div className="absolute inset-0 bg-gradient-to-r from-background-100 via-background-200 to-background-100 bg-[length:200%_100%] animate-[shimmer_1.5s_ease-in-out_infinite]" />
           )}
 
-          {/* Current image — only one rendered */}
+          {/* 1. Blurred Background Layer */}
+          <img
+            src={images[current]}
+            alt=""
+            aria-hidden="true"
+            className={`absolute inset-0 w-full h-full object-cover blur-2xl scale-110 opacity-60 transition-opacity duration-300 ${
+              loaded ? 'opacity-100' : 'opacity-0'
+            }`}
+          />
+
+          {/* 2. Main Foreground Image (Uncropped) */}
           <img
             src={images[current]}
             alt={`${title} - Photo ${current + 1}`}
-            className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-300 ${
+            className={`absolute inset-0 w-full h-full object-contain z-10 transition-opacity duration-300 ${
               loaded ? 'opacity-100' : 'opacity-0'
             }`}
             onLoad={() => setLoaded(true)}
@@ -93,21 +103,21 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           />
 
           {/* Overlay gradient for text safety */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute inset-0 z-20 bg-gradient-to-t from-black/30 via-transparent to-transparent pointer-events-none" />
 
           {/* Navigation Arrows */}
           {images.length > 1 && (
             <>
               <button
                 onClick={goPrev}
-                className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+                className="absolute left-3 md:left-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
                 aria-label="Previous image"
               >
                 <i className="ri-arrow-left-s-line text-lg md:text-xl" />
               </button>
               <button
                 onClick={goNext}
-                className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+                className="absolute right-3 md:right-4 top-1/2 -translate-y-1/2 z-20 w-10 h-10 md:w-11 md:h-11 rounded-full bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
                 aria-label="Next image"
               >
                 <i className="ri-arrow-right-s-line text-lg md:text-xl" />
@@ -118,7 +128,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
           {/* Fullscreen toggle */}
           <button
             onClick={() => setFullscreen(true)}
-            className="absolute bottom-3 left-3 w-9 h-9 rounded-lg bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
+            className="absolute bottom-3 left-3 z-20 w-9 h-9 rounded-lg bg-black/30 hover:bg-black/50 backdrop-blur-sm text-white flex items-center justify-center transition-all duration-200 opacity-0 group-hover:opacity-100"
             aria-label="Open fullscreen"
           >
             <i className="ri-fullscreen-line text-sm" />
@@ -126,7 +136,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
 
           {/* Bullets */}
           {images.length > 1 && (
-            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
+            <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
               {images.map((_, idx) => (
                 <button
                   key={idx}
@@ -216,7 +226,7 @@ export default function ImageGallery({ images, title }: ImageGalleryProps) {
             </>
           )}
 
-          {/* Fullscreen image — only current one rendered */}
+          {/* Fullscreen image */}
           <img
             src={images[current]}
             alt={title}

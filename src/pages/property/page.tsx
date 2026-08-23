@@ -1,12 +1,11 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import PropertyCard from '@/pages/home/components/PropertyCard';
 import ImageGallery from '@/pages/property/components/ImageGallery';
-import { exploreProperties, featuredProperties } from '@/mocks/properties';
-
-const allProperties = [...featuredProperties, ...exploreProperties];
+import { type Property, featuredProperties } from '@/mocks/properties';
+import { fetchAllProperties } from '@/services/propertyService';
 
 const agent = {
   name: 'Brian Kiprotich',
@@ -22,28 +21,53 @@ export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [favorited, setFavorited] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  
+  const [property, setProperty] = useState<Property | null>(null);
+  const [related, setRelated] = useState<Property[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  const property = useMemo(() => {
-    return allProperties.find((p) => p.id === id);
+  // Safely find the property from the master list
+  useEffect(() => {
+    async function loadData() {
+      if (!id) return;
+      
+      setLoading(true);
+      try {
+        const allFetched = await fetchAllProperties();
+        const allProperties = [...featuredProperties, ...allFetched];
+        
+        // Ensure perfect string matching
+        const foundProperty = allProperties.find(p => String(p.id) === String(id));
+        setProperty(foundProperty || null);
+
+        if (foundProperty) {
+          const relatedProps = allProperties
+            .filter((p) => String(p.id) !== String(foundProperty.id))
+            .filter((p) => {
+              const sameType = p.type?.toLowerCase() === foundProperty.type?.toLowerCase();
+              const fetchedLocation = foundProperty.location ? foundProperty.location.split(',')[0].trim() : '';
+              const pLocation = p.location ? p.location.split(',')[0].trim() : '';
+              const sameLocation = pLocation === fetchedLocation;
+              return sameType || sameLocation;
+            })
+            .slice(0, 4);
+            
+          setRelated(relatedProps);
+        }
+      } catch (error) {
+        console.error("Error loading property:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    
+    loadData();
   }, [id]);
-
-  const related = useMemo(() => {
-    if (!property) return [];
-    return allProperties
-      .filter((p) => p.id !== property.id)
-      .filter((p) => {
-        const sameType = p.type === property.type;
-        const sameLocation = p.location.split(',')[0].trim() === property.location.split(',')[0].trim();
-        return sameType || sameLocation;
-      })
-      .slice(0, 4);
-  }, [property]);
 
   const statusLabel = useMemo(() => {
     if (!property?.status) {
-      // infer from title
-      if (property?.title.toLowerCase().includes('rent')) return 'For Rent';
-      if (property?.title.toLowerCase().includes('sale')) return 'For Sale';
+      if (property?.title?.toLowerCase().includes('rent')) return 'For Rent';
+      if (property?.title?.toLowerCase().includes('sale')) return 'For Sale';
       return 'Available';
     }
     return property.status === 'rent' ? 'For Rent' : 'For Sale';
@@ -54,8 +78,22 @@ export default function PropertyDetailPage() {
   const images = useMemo(() => {
     if (!property) return [];
     if (property.images && property.images.length > 0) return property.images;
-    return [property.image, property.image, property.image];
+    return property.image ? [property.image, property.image, property.image] : [];
   }, [property]);
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background-50">
+        <Navbar />
+        <div className="h-16 md:h-20" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32 text-center">
+          <i className="ri-loader-4-line text-4xl animate-spin text-primary-500 inline-block mb-4" />
+          <p className="text-foreground-500">Loading property details...</p>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!property) {
     return (
@@ -81,7 +119,7 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const locationQuery = encodeURIComponent(property.location);
+  const locationQuery = encodeURIComponent(property.location || '');
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -177,8 +215,7 @@ export default function PropertyDetailPage() {
                   </span>
                 )}
                 {property.underConstruction && (
-                  <span className="px-3 py-1 rounded-full text-[11px] font-semibold text-black uppercase tracking-wide bg-yellow-500"
->
+                  <span className="px-3 py-1 rounded-full text-[11px] font-semibold text-black uppercase tracking-wide bg-yellow-500">
                     Under Construction
                   </span>
                 )}
@@ -275,7 +312,7 @@ export default function PropertyDetailPage() {
                   </div>
                   <div className="flex flex-col gap-1 p-3 rounded-xl bg-background-100">
                     <span className="text-[10px] text-foreground-500 uppercase font-semibold tracking-wider">Type</span>
-                    <span className="text-lg font-bold text-foreground-950 capitalize">{property.type}</span>
+                    <span className="text-lg font-bold text-foreground-950 capitalize">{property.type || '-'}</span>
                   </div>
                   <div className="flex flex-col gap-1 p-3 rounded-xl bg-background-100">
                     <span className="text-[10px] text-foreground-500 uppercase font-semibold tracking-wider">Status</span>

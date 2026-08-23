@@ -17,17 +17,28 @@ export default function PropertyCard({ property }: PropertyCardProps) {
       className="block h-full group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-500 focus-visible:ring-offset-2 rounded-2xl focus-visible:ring-offset-background-50"
     >
       <article className="bg-card rounded-2xl overflow-hidden border border-background-200 hover:border-background-200/80 shadow-sm hover:shadow-lg hover:shadow-black/5 transition-all duration-300 flex flex-col h-full">
-        {/* Image */}
+        {/* Image Container */}
         <div className="relative h-48 overflow-hidden bg-background-100">
+          
+          {/* 1. Blurred Background Layer */}
+          <img
+            src={property.image}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-xl scale-125 opacity-70 group-hover:scale-[1.3] transition-transform duration-700 ease-out"
+          />
+          
+          {/* 2. Main Foreground Image (Uncropped) */}
           <img
             src={property.image}
             alt={property.title}
-            className="w-full h-full object-cover group-hover:scale-[1.06] transition-transform duration-700 ease-out"
+            className="absolute inset-0 w-full h-full object-contain group-hover:scale-[1.06] transition-transform duration-700 ease-out z-10"
             loading="lazy"
             decoding="async"
           />
-          {/* Badges */}
-          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5">
+          
+          {/* Badges (z-20 to sit above foreground image) */}
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-20">
             {property.hotDeal && (
               <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold tracking-wide shadow-sm bg-orange-500 text-white">
                 Hot Deal
@@ -44,7 +55,8 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               </span>
             )}
           </div>
-          {/* Favorite button */}
+          
+          {/* Favorite button (z-20) */}
           <button
             type="button"
             onClick={(e) => {
@@ -52,7 +64,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               e.stopPropagation();
               setFavorited(!favorited);
             }}
-            className="absolute top-2.5 right-2.5 w-8 h-8 bg-background-50/70 backdrop-blur-sm hover:bg-background-50 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
+            className="absolute top-2.5 right-2.5 z-20 w-8 h-8 bg-background-50/70 backdrop-blur-sm hover:bg-background-50 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
             aria-label="Add to favorites"
           >
             <i

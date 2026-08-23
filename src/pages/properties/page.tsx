@@ -17,8 +17,11 @@ const furnishingOptions = ['All Furnishing', 'Furnished', 'Unfurnished', 'Semi-F
 const bedroomOptions = ['Bedrooms', '1', '2', '3', '4', '5+'];
 const priceRanges = ['All Prices', 'Under 5M', '5M - 15M', '15M - 50M', '50M+'];
 
-function parsePrice(price: string): number {
-  return parseInt(price.replace(/,/g, ''), 10) || 0;
+// Ultra-safe price parser to prevent crashes on malformed data
+function parsePrice(price: any): number {
+  if (!price) return 0;
+  if (typeof price === 'number') return price;
+  return parseInt(String(price).replace(/,/g, ''), 10) || 0;
 }
 
 export default function PropertiesPage() {
@@ -34,48 +37,74 @@ export default function PropertiesPage() {
   const [priceRange, setPriceRange] = useState('All Prices');
   const [visibleCount, setVisibleCount] = useState(20);
 
-  // Fetch properties from Firebase on mount
+  // Safely fetch properties and guarantee loading state completes
   useEffect(() => {
+    let mounted = true;
     async function loadProperties() {
-      const fetchedProperties = await fetchAllProperties();
-      // Combine static featured properties with our fetched properties
-      setProperties([...featuredProperties, ...fetchedProperties]);
-      setLoading(false);
+      try {
+        const fetchedProperties = await fetchAllProperties();
+        if (mounted) {
+          // Combine and remove any accidental duplicates
+          const combined = [...featuredProperties, ...fetchedProperties];
+          const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+          setProperties(unique);
+        }
+      } catch (error) {
+        console.error("Failed to load properties:", error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     }
     loadProperties();
+    return () => { mounted = false; };
   }, []);
 
+  // Bulletproof filtering to prevent React crashes on undefined fields
   const filtered = useMemo(() => {
-    let result = [...properties];
+    try {
+      let result = [...properties];
 
-    if (activeCategory !== 'All') {
-      const cat = activeCategory.toLowerCase();
-      result = result.filter((p) => p.type.toLowerCase().includes(cat) || p.title.toLowerCase().includes(cat));
+      if (activeCategory !== 'All') {
+        const cat = activeCategory.toLowerCase();
+        result = result.filter((p) => 
+          (p.type?.toLowerCase() || '').includes(cat) || 
+          (p.title?.toLowerCase() || '').includes(cat)
+        );
+      }
+
+      if (searchQuery.trim()) {
+        const q = searchQuery.toLowerCase();
+        result = result.filter(
+          (p) =>
+            (p.title?.toLowerCase() || '').includes(q) ||
+            (p.location?.toLowerCase() || '').includes(q) ||
+            (p.description?.toLowerCase() || '').includes(q)
+        );
+      }
+
+      if (transactionType === 'For Sale') {
+        result = result.filter((p) => 
+          (p.title?.toLowerCase() || '').includes('sale') || 
+          (p.status?.toLowerCase() || '') === 'sale'
+        );
+      } else if (transactionType === 'For Rent') {
+        result = result.filter((p) => 
+          (p.title?.toLowerCase() || '').includes('rent') || 
+          (p.status?.toLowerCase() || '') === 'rent'
+        );
+      }
+
+      if (sortBy === 'price-asc') {
+        result.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
+      } else if (sortBy === 'price-desc') {
+        result.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
+      }
+
+      return result;
+    } catch (err) {
+      console.error("Filter error:", err);
+      return properties; // Fallback to show all properties rather than a white screen
     }
-
-    if (searchQuery.trim()) {
-      const q = searchQuery.toLowerCase();
-      result = result.filter(
-        (p) =>
-          p.title.toLowerCase().includes(q) ||
-          p.location.toLowerCase().includes(q) ||
-          p.description.toLowerCase().includes(q)
-      );
-    }
-
-    if (transactionType === 'For Sale') {
-      result = result.filter((p) => p.title.toLowerCase().includes('sale'));
-    } else if (transactionType === 'For Rent') {
-      result = result.filter((p) => p.title.toLowerCase().includes('rent'));
-    }
-
-    if (sortBy === 'price-asc') {
-      result.sort((a, b) => parsePrice(a.price) - parsePrice(b.price));
-    } else if (sortBy === 'price-desc') {
-      result.sort((a, b) => parsePrice(b.price) - parsePrice(a.price));
-    }
-
-    return result;
   }, [properties, activeCategory, searchQuery, sortBy, transactionType]);
 
   const visible = filtered.slice(0, visibleCount);
@@ -143,31 +172,26 @@ export default function PropertiesPage() {
               value={transactionType}
               onChange={setTransactionType}
             />
-
             <FilterDropdown
               options={[{ label: 'All Property Type', value: 'All' }, ...propertyCategories.filter((c) => c !== 'All').map((c) => ({ label: c, value: c }))]}
               value={activeCategory}
               onChange={setActiveCategory}
             />
-
             <FilterDropdown
               options={furnishingOptions.map((f) => ({ label: f, value: f }))}
               value={furnishing}
               onChange={setFurnishing}
             />
-
             <FilterDropdown
               options={bedroomOptions.map((b) => ({ label: b, value: b }))}
               value={bedrooms}
               onChange={setBedrooms}
             />
-
             <FilterDropdown
               options={priceRanges.map((p) => ({ label: p, value: p }))}
               value={priceRange}
               onChange={setPriceRange}
             />
-
             <FilterDropdown
               options={sortOptions}
               value={sortBy}
