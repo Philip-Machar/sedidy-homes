@@ -7,16 +7,6 @@ import ImageGallery from '@/pages/property/components/ImageGallery';
 import { type Property, featuredProperties } from '@/mocks/properties';
 import { fetchAllProperties } from '@/services/propertyService';
 
-const agent = {
-  name: 'Brian Kiprotich',
-  role: 'Senior Property Consultant',
-  phone: '+254 796 476 637',
-  email: 'brian@sedidyhomes.com',
-  image: 'https://readdy.ai/api/search-image?query=Professional%20African%20male%20real%20estate%20agent%20portrait%20headshot%20wearing%20navy%20suit%20and%20tie%20warm%20smile%20clean%20studio%20background%20corporate%20headshot%20photography&width=200&height=200&seq=agent-james&orientation=squarish',
-  experience: '8+ years',
-  listings: 47,
-};
-
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [favorited, setFavorited] = useState(false);
@@ -26,7 +16,6 @@ export default function PropertyDetailPage() {
   const [related, setRelated] = useState<Property[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Safely find the property from the master list
   useEffect(() => {
     async function loadData() {
       if (!id) return;
@@ -36,20 +25,16 @@ export default function PropertyDetailPage() {
         const allFetched = await fetchAllProperties();
         const allProperties = [...featuredProperties, ...allFetched];
         
-        // Ensure perfect string matching
         const foundProperty = allProperties.find(p => String(p.id) === String(id));
         setProperty(foundProperty || null);
 
         if (foundProperty) {
           const relatedProps = allProperties
+            // 1. Exclude the current property
             .filter((p) => String(p.id) !== String(foundProperty.id))
-            .filter((p) => {
-              const sameType = p.type?.toLowerCase() === foundProperty.type?.toLowerCase();
-              const fetchedLocation = foundProperty.location ? foundProperty.location.split(',')[0].trim() : '';
-              const pLocation = p.location ? p.location.split(',')[0].trim() : '';
-              const sameLocation = pLocation === fetchedLocation;
-              return sameType || sameLocation;
-            })
+            // 2. STRICTLY match by property type
+            .filter((p) => p.type?.toLowerCase() === foundProperty.type?.toLowerCase())
+            // 3. Limit to 4 results
             .slice(0, 4);
             
           setRelated(relatedProps);
@@ -119,7 +104,31 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const locationQuery = encodeURIComponent(property.location || '');
+  // --- SMART MAP PARSER ---
+  const rawMapInput = ((property as any).mapLocation || property.location || '').trim();
+  let mapIframeSrc = '';
+  let externalMapLink = '';
+
+  const isUrl = /^https?:\/\//i.test(rawMapInput);
+  const isIframe = rawMapInput.toLowerCase().startsWith('<iframe') && rawMapInput.includes('src="');
+  const isEmbedUrl = rawMapInput.startsWith('https://www.google.com/maps/embed');
+
+  if (isIframe) {
+    // User pasted the full embed HTML code
+    const match = rawMapInput.match(/src="([^"]+)"/);
+    mapIframeSrc = match ? match[1] : '';
+  } else if (isEmbedUrl) {
+    // User pasted just the embed URL source
+    mapIframeSrc = rawMapInput;
+  } else if (isUrl) {
+    // User pasted a standard share link (e.g. maps.app.goo.gl)
+    // We cannot embed this directly, so we expose it as a button and fallback the visual map
+    externalMapLink = rawMapInput;
+    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(property.location || '')}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  } else {
+    // User pasted a plain text address
+    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(rawMapInput)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  }
 
   const copyLink = () => {
     navigator.clipboard.writeText(window.location.href);
@@ -172,22 +181,6 @@ export default function PropertyDetailPage() {
                 </div>
               )}
             </div>
-
-            <button
-              onClick={() => setFavorited(!favorited)}
-              className={`w-9 h-9 rounded-full border flex items-center justify-center transition-colors ${
-                favorited
-                  ? 'border-red-200 bg-red-50'
-                  : 'border-background-200 bg-card hover:bg-background-100'
-              }`}
-              aria-label="Add to favorites"
-            >
-              <i
-                className={`text-sm ${
-                  favorited ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-foreground-600'
-                }`}
-              />
-            </button>
           </div>
         </div>
 
@@ -212,11 +205,6 @@ export default function PropertyDetailPage() {
                 {property.fullyFurnished && (
                   <span className="px-3 py-1 rounded-full text-[11px] font-semibold text-white uppercase tracking-wide bg-foreground-700/80">
                     Fully Furnished
-                  </span>
-                )}
-                {property.underConstruction && (
-                  <span className="px-3 py-1 rounded-full text-[11px] font-semibold text-black uppercase tracking-wide bg-yellow-500">
-                    Under Construction
                   </span>
                 )}
               </div>
@@ -269,8 +257,8 @@ export default function PropertyDetailPage() {
               <h2 className="text-lg font-semibold text-foreground-950 mb-4">Location</h2>
               <div className="rounded-xl overflow-hidden border border-background-200">
                 <iframe
-                  title={`Map of ${property.location}`}
-                  src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d15955.3!2d36.8!3d-1.28!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zMcKwMTYnNDguMCJTIDM2wrA0OCcwMC4wIkU!5e0!3m2!1sen!2ske!4v1!5m2!1sen!2ske&q=${locationQuery}`}
+                  title={`Map showing location`}
+                  src={mapIframeSrc}
                   className="w-full h-64 md:h-80"
                   style={{ border: 0 }}
                   allowFullScreen
@@ -278,10 +266,25 @@ export default function PropertyDetailPage() {
                   referrerPolicy="no-referrer-when-downgrade"
                 />
               </div>
-              <p className="text-sm text-foreground-500 mt-3 flex items-center gap-1.5">
-                <i className="ri-map-pin-2-line" />
-                {property.location}
-              </p>
+              
+              <div className="mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <p className="text-sm text-foreground-500 flex items-center gap-1.5">
+                  <i className="ri-map-pin-2-line text-primary-500" />
+                  {(!isUrl && !isIframe) ? rawMapInput : property.location}
+                </p>
+
+                {externalMapLink && (
+                  <a 
+                    href={externalMapLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-primary-50 text-primary-700 text-xs font-bold rounded-lg hover:bg-primary-100 transition-colors whitespace-nowrap"
+                  >
+                    <i className="ri-external-link-line" />
+                    Open in Google Maps
+                  </a>
+                )}
+              </div>
             </div>
           </div>
 
@@ -319,43 +322,17 @@ export default function PropertyDetailPage() {
                     <span className="text-lg font-bold text-foreground-950 capitalize">{statusLabel}</span>
                   </div>
                 </div>
-              </div>
-
-              {/* Agent Card */}
-              <div className="bg-card rounded-2xl border border-background-200 p-5">
-                <h3 className="font-semibold text-foreground-950 mb-4">Listed By</h3>
-                <div className="flex items-center gap-3 mb-4">
-                  <img
-                    src={agent.image}
-                    alt={agent.name}
-                    className="w-12 h-12 rounded-full object-cover border border-background-200"
-                    loading="lazy"
-                    decoding="async"
-                  />
-                  <div>
-                    <p className="font-semibold text-foreground-950 text-sm">{agent.name}</p>
-                    <p className="text-xs text-foreground-500">{agent.role}</p>
-                  </div>
+                
+                {/* Direct Contact/Tour Call To Action */}
+                <div className="mt-6 pt-6 border-t border-background-200">
+                  <a
+                    href="/contact"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white text-sm font-semibold rounded-xl hover:bg-primary-600 transition-colors active:scale-[0.98]"
+                  >
+                    <i className="ri-calendar-schedule-line" />
+                    Schedule Tour
+                  </a>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-foreground-500 mb-4">
-                  <span className="px-2 py-1 bg-background-100 rounded-md">{agent.experience} experience</span>
-                  <span className="px-2 py-1 bg-background-100 rounded-md">{agent.listings} listings</span>
-                </div>
-
-                <a
-                  href={`tel:${agent.phone.replace(/\s/g, '')}`}
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 bg-primary-500 text-white text-sm font-semibold rounded-xl hover:bg-primary-600 transition-colors active:scale-[0.98]"
-                >
-                  <i className="ri-phone-line" />
-                  Contact Agent
-                </a>
-                <a
-                  href="/contact"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 border border-background-200 bg-card text-foreground-700 text-sm font-semibold rounded-xl hover:bg-background-100 transition-colors mt-2"
-                >
-                  <i className="ri-calendar-schedule-line" />
-                  Schedule Tour
-                </a>
               </div>
 
               {/* Quick Info */}
@@ -382,7 +359,7 @@ export default function PropertyDetailPage() {
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-foreground-950 mb-2">Related Properties</h2>
               <p className="text-sm text-foreground-500">
-                Discover other properties with similar features and location.
+                Discover other properties with similar features.
               </p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">

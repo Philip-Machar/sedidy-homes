@@ -1,22 +1,32 @@
-import { createProperty, uploadImageToStorage } from '@/services/propertyService';
-import { applyWatermark } from '@/utils/watermark'; // <-- Add this import
-
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
+import { createProperty, uploadImageToStorage } from '@/services/propertyService';
+import { applyWatermark } from '@/utils/watermark';
 
 export default function UploadProperty() {
   const [status, setStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [previewUrl, setPreviewUrl] = useState<string>('');
+  
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [previewUrls, setPreviewUrls] = useState<string[]>([]);
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      setPreviewUrl(URL.createObjectURL(file));
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      setSelectedFiles((prev) => [...prev, ...files]);
+      const newUrls = files.map((file) => URL.createObjectURL(file));
+      setPreviewUrls((prev) => [...prev, ...newUrls]);
     }
+    e.target.value = '';
+  };
+
+  const removeFile = (indexToRemove: number) => {
+    setSelectedFiles((prev) => prev.filter((_, index) => index !== indexToRemove));
+    setPreviewUrls((prev) => {
+      URL.revokeObjectURL(prev[indexToRemove]);
+      return prev.filter((_, index) => index !== indexToRemove);
+    });
   };
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -28,35 +38,43 @@ export default function UploadProperty() {
     const formData = new FormData(form);
 
     try {
-      let finalImageUrl = (formData.get('imageUrl') as string) || '';
+      let finalImageUrls: string[] = [];
 
-      // Upload file to Firebase Storage if selected
-      if (selectedFile) {
-        // --- NEW WATERMARK LOGIC ---
-        // Apply the watermark before uploading
-        const watermarkedFile = await applyWatermark(selectedFile, 'Sedidy Homes');
+      if (selectedFiles.length > 0) {
+        const uploadPromises = selectedFiles.map(async (file) => {
+          const watermarkedFile = await applyWatermark(file);
+          return await uploadImageToStorage(watermarkedFile);
+        });
         
-        // Upload the watermarked file instead of the original
-        finalImageUrl = await uploadImageToStorage(watermarkedFile);
-        // ---------------------------
-    }
+        finalImageUrls = await Promise.all(uploadPromises);
+      } else {
+        const manualUrls = formData.get('imageUrl') as string;
+        if (manualUrls) {
+          finalImageUrls = manualUrls.split(',').map((url) => url.trim()).filter(Boolean);
+        }
+      }
+
+      if (finalImageUrls.length === 0) {
+        throw new Error('Please select at least one image file or provide image URLs.');
+      }
 
       const amenitiesArray = (formData.get('amenities') as string)
         ? (formData.get('amenities') as string).split(',').map((item) => item.trim()).filter(Boolean)
         : [];
 
-      // Save document in Firestore
       await createProperty({
         title: formData.get('title') as string,
         price: formData.get('price') as string,
         currency: (formData.get('currency') as string) || 'KES',
         location: formData.get('location') as string,
+        mapLocation: formData.get('mapLocation') as string,
         description: formData.get('description') as string,
-        image: finalImageUrl,
-        images: [finalImageUrl],
-        imageCount: 1,
+        image: finalImageUrls[0], 
+        images: finalImageUrls,   
+        imageCount: finalImageUrls.length,
         type: formData.get('type') as string,
         status: formData.get('status') as 'sale' | 'rent',
+        visibilityStatus: 'published',
         beds: Number(formData.get('beds')) || 0,
         baths: Number(formData.get('baths')) || 0,
         sqft: (formData.get('sqft') as string) || '',
@@ -69,8 +87,8 @@ export default function UploadProperty() {
 
       setStatus('success');
       form.reset();
-      setSelectedFile(null);
-      setPreviewUrl('');
+      setSelectedFiles([]);
+      setPreviewUrls([]);
     } catch (err: any) {
       console.error(err);
       setStatus('error');
@@ -87,7 +105,6 @@ export default function UploadProperty() {
       <Navbar />
       <div className="h-16 md:h-20" />
 
-      {/* Admin Hero */}
       <section className="relative overflow-hidden bg-primary-950 py-12 md:py-16">
         <div className="absolute top-[10%] right-[5%] w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none" />
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
@@ -103,7 +120,6 @@ export default function UploadProperty() {
         </div>
       </section>
 
-      {/* Form Section */}
       <section className="py-10 md:py-14">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {status === 'success' ? (
@@ -137,7 +153,6 @@ export default function UploadProperty() {
                 </div>
               )}
 
-              {/* Basic Information */}
               <div className="bg-card rounded-2xl p-6 md:p-8 border border-background-200 shadow-sm">
                 <h2 className={sectionTitleClass}>
                   <i className="ri-information-line text-primary-500" /> Basic Information
@@ -163,7 +178,11 @@ export default function UploadProperty() {
                         <option value="apartment">Apartment</option>
                         <option value="villa">Villa</option>
                         <option value="townhouse">Townhouse</option>
-                        <option value="commercial">Commercial Space</option>
+                        <option value="land">Land</option>
+                        <option value="office">Office</option>
+                        <option value="commercial space">Commercial Space</option>
+                        <option value="studio">Studio</option>
+                        <option value="other">Other</option>
                       </select>
                     </div>
                     <div>
@@ -181,14 +200,19 @@ export default function UploadProperty() {
                       <input type="text" name="price" required placeholder="e.g. 28,000,000" className={inputClass} />
                     </div>
                     <div>
-                      <label className={labelClass}>Location *</label>
+                      <label className={labelClass}>General Location *</label>
                       <input type="text" name="location" required placeholder="e.g. Watamu, Kenya" className={inputClass} />
                     </div>
+                  </div>
+
+                  <div className="pt-2">
+                    <label className={labelClass}>Exact Map Address (For Google Maps)</label>
+                    <input type="text" name="mapLocation" placeholder="e.g. Riverside Drive, Nairobi" className={inputClass} />
+                    <p className="text-[11px] text-foreground-400 mt-1.5">Providing an exact landmark or street makes the map highly accurate.</p>
                   </div>
                 </div>
               </div>
 
-              {/* Property Details */}
               <div className="bg-card rounded-2xl p-6 md:p-8 border border-background-200 shadow-sm">
                 <h2 className={sectionTitleClass}>
                   <i className="ri-layout-masonry-line text-primary-500" /> Property Details
@@ -224,31 +248,43 @@ export default function UploadProperty() {
                 </div>
               </div>
 
-              {/* Media Upload */}
               <div className="bg-card rounded-2xl p-6 md:p-8 border border-background-200 shadow-sm">
                 <h2 className={sectionTitleClass}>
-                  <i className="ri-image-add-line text-primary-500" /> Property Image
+                  <i className="ri-image-add-line text-primary-500" /> Property Images
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>Upload Image File</label>
+                    <label className={labelClass}>Upload Image Files (Select Multiple)</label>
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleFileChange}
                       className="w-full text-sm text-foreground-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer"
                     />
                   </div>
 
-                  {previewUrl && (
-                    <div className="relative w-48 h-32 rounded-lg overflow-hidden border border-background-200">
-                      <img src={previewUrl} alt="Preview" className="w-full h-full object-cover" />
+                  {previewUrls.length > 0 && (
+                    <div className="flex flex-wrap gap-4 pt-2">
+                      {previewUrls.map((url, idx) => (
+                        <div key={idx} className="relative w-28 h-24 rounded-lg overflow-hidden border border-background-200 shadow-sm group">
+                          <img src={url} alt={`Preview ${idx + 1}`} className="w-full h-full object-cover" />
+                          <button
+                            type="button"
+                            onClick={() => removeFile(idx)}
+                            className="absolute top-1.5 right-1.5 w-6 h-6 bg-red-500/90 hover:bg-red-600 text-white rounded-full flex items-center justify-center text-xs opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm"
+                            aria-label="Remove image"
+                          >
+                            <i className="ri-close-line" />
+                          </button>
+                        </div>
+                      ))}
                     </div>
                   )}
 
                   <div>
-                    <label className={labelClass}>Or Provide Image URL</label>
-                    <input type="url" name="imageUrl" placeholder="https://example.com/image.jpg" className={inputClass} />
+                    <label className={labelClass}>Or Provide Image URLs (Comma-separated)</label>
+                    <input type="text" name="imageUrl" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" className={inputClass} />
                   </div>
 
                   <div>
@@ -269,7 +305,6 @@ export default function UploadProperty() {
                 </div>
               </div>
 
-              {/* Action Buttons */}
               <div className="flex items-center justify-end gap-3 pt-4">
                 <button
                   type="submit"

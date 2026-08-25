@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import type { Property } from '@/mocks/properties';
 
 interface PropertyCardProps {
@@ -6,8 +5,6 @@ interface PropertyCardProps {
 }
 
 export default function PropertyCard({ property }: PropertyCardProps) {
-  const [favorited, setFavorited] = useState(false);
-
   const visibleTags = property.tags.slice(0, 3);
   const extraTagCount = property.tags.length - 3;
 
@@ -49,30 +46,7 @@ export default function PropertyCard({ property }: PropertyCardProps) {
                 Fully Furnished
               </span>
             )}
-            {property.underConstruction && (
-              <span className="px-2.5 py-1 rounded-lg text-[11px] font-semibold tracking-wide shadow-sm bg-yellow-600 text-black">
-                Under Construction
-              </span>
-            )}
           </div>
-          
-          {/* Favorite button (z-20) */}
-          <button
-            type="button"
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setFavorited(!favorited);
-            }}
-            className="absolute top-2.5 right-2.5 z-20 w-8 h-8 bg-background-50/70 backdrop-blur-sm hover:bg-background-50 rounded-full transition-all duration-200 hover:scale-110 flex items-center justify-center"
-            aria-label="Add to favorites"
-          >
-            <i
-              className={`${
-                favorited ? 'ri-heart-fill text-red-500' : 'ri-heart-line text-foreground-700'
-              } text-sm`}
-            />
-          </button>
         </div>
 
         {/* Content */}
@@ -118,26 +92,6 @@ export default function PropertyCard({ property }: PropertyCardProps) {
               </span>
             )}
           </div>
-
-          {/* Construction progress */}
-          {property.constructionProgress !== undefined && (
-            <div className="mb-3 pb-3 border-b border-background-200">
-              <div className="flex justify-between items-center mb-1.5">
-                <span className="text-[10px] text-foreground-500/50 uppercase tracking-widest font-semibold">
-                  Construction
-                </span>
-                <span className="text-[11px] font-bold text-primary-600 tabular-nums">
-                  {property.constructionProgress}%
-                </span>
-              </div>
-              <div className="w-full bg-background-100 rounded-full h-1.5 overflow-hidden">
-                <div
-                  className="h-full bg-primary-500 rounded-full transition-all duration-500"
-                  style={{ width: `${property.constructionProgress}%` }}
-                />
-              </div>
-            </div>
-          )}
 
           {/* Footer */}
           <div className="flex items-center justify-between pt-3 mt-auto border-t border-background-200/50">

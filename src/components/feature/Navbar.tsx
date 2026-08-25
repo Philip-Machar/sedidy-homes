@@ -47,12 +47,12 @@ export default function Navbar() {
           {/* Right side */}
           <div className="flex items-center gap-2 md:gap-3">
             <div className="hidden lg:block">
-              <button
-                type="button"
+              <a
+                href="/list-with-us"
                 className="inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all outline-none focus-visible:ring-2 focus-visible:ring-primary-400 h-10 px-5 bg-primary-500 text-white hover:bg-primary-600 active:scale-[0.97] shadow-sm"
               >
                 List with us
-              </button>
+              </a>
             </div>
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
@@ -89,12 +89,12 @@ export default function Navbar() {
             </a>
           ))}
           <div className="pt-2">
-            <button
-              type="button"
+            <a
+              href="/list-with-us"
               className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-xl text-sm font-medium transition-all h-10 px-4 py-2 bg-primary-500 text-white hover:bg-primary-600 active:scale-[0.98]"
             >
               List with us
-            </button>
+            </a>
           </div>
         </div>
       </div>

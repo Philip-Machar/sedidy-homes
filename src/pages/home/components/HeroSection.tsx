@@ -40,7 +40,7 @@ export default function HeroSection() {
             Explore Properties
           </a>
           <a
-            href="/contact"
+            href="/list-with-us"
             className="inline-flex items-center justify-center gap-2 px-7 py-3 rounded-xl border-2 border-white/40 text-white hover:bg-white/10 hover:border-white/60 active:scale-[0.97] transition-all font-medium text-sm whitespace-nowrap"
           >
             List Your Property
