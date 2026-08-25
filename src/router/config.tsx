@@ -8,8 +8,10 @@ import ServicesPage from "../pages/services/page";
 import BlogPage from "../pages/blog/page";
 import ContactPage from "../pages/contact/page";
 import UploadProperty from "../pages/admin/UploadProperty";
-import SubmitListingPage from "../pages/submit-listing/page"; // <-- Import public submit page
-import ReviewListings from "../pages/admin/ReviewListings";    // <-- Import admin review page
+import SubmitListingPage from "../pages/submit-listing/page";
+import ReviewListings from "../pages/admin/ReviewListings";
+import ManageListings from "../pages/admin/ManageListings";   // <-- New import
+import EditProperty from "../pages/admin/EditProperty";       // <-- New import
 
 const routes: RouteObject[] = [
   { path: "/", element: <Home /> },
@@ -19,9 +21,11 @@ const routes: RouteObject[] = [
   { path: "/services", element: <ServicesPage /> },
   { path: "/blog", element: <BlogPage /> },
   { path: "/contact", element: <ContactPage /> },
-  { path: "/list-with-us", element: <SubmitListingPage /> },      // <-- Add public route
+  { path: "/list-with-us", element: <SubmitListingPage /> },
   { path: "/admin/upload-property", element: <UploadProperty /> },
-  { path: "/admin/review-listings", element: <ReviewListings /> },  // <-- Add admin route
+  { path: "/admin/review-listings", element: <ReviewListings /> },
+  { path: "/admin/manage-listings", element: <ManageListings /> }, // <-- Manage Dashboard
+  { path: "/admin/edit-property/:id", element: <EditProperty /> }, // <-- Edit form
   { path: "*", element: <NotFound /> },
 ];
 

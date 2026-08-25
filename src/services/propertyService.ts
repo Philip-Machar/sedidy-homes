@@ -1,4 +1,4 @@
-import { collection, addDoc, getDocs, getDoc, doc, updateDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy, serverTimestamp } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { exploreProperties as initialMockProperties, type Property } from '@/mocks/properties';
@@ -70,4 +70,19 @@ export async function fetchPropertyById(id: string): Promise<Property | null> {
 
   const fallback = initialMockProperties.find((p) => p.id === id);
   return fallback || null;
+}
+
+// Delete a property
+export async function deleteProperty(id: string): Promise<void> {
+  const docRef = doc(db, PROPERTIES_COLLECTION, id);
+  await deleteDoc(docRef);
+}
+
+// Update an existing property
+export async function updatePropertyData(id: string, propertyData: any): Promise<void> {
+  const docRef = doc(db, PROPERTIES_COLLECTION, id);
+  await updateDoc(docRef, {
+    ...propertyData,
+    updatedAt: serverTimestamp(),
+  });
 }
