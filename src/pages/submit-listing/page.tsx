@@ -195,7 +195,7 @@ export default function SubmitListingPage() {
                   </div>
                   <div>
                     <label className={labelClass}>General Location *</label>
-                    <input type="text" name="location" required placeholder="e.g. Kilimani, Nairobi" className={inputClass} />
+                    <input type="text" name="location" required placeholder="e.g. Karen, Nairobi" className={inputClass} />
                   </div>
                 </div>
 

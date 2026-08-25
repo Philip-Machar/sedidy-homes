@@ -29,7 +29,7 @@ export default function PropertiesPage() {
   const [loading, setLoading] = useState(true);
   
   const [activeCategory, setActiveCategory] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(() => new URLSearchParams(window.location.search).get('search') || '');
   const [sortBy, setSortBy] = useState('newest');
   const [transactionType, setTransactionType] = useState('All');
   const [furnishing, setFurnishing] = useState('All Furnishing');

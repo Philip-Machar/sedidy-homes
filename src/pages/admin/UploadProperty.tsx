@@ -201,7 +201,7 @@ export default function UploadProperty() {
                     </div>
                     <div>
                       <label className={labelClass}>General Location *</label>
-                      <input type="text" name="location" required placeholder="e.g. Watamu, Kenya" className={inputClass} />
+                      <input type="text" name="location" required placeholder="e.g. Karen, Nairobi" className={inputClass} />
                     </div>
                   </div>
 
