@@ -30,7 +30,7 @@ export const applyWatermark = (file: File): Promise<File> => {
 
         // --- SAFE ZONE PADDING ---
         const paddingX = img.width * 0.04; 
-        const paddingY = img.height * 0.30; 
+        const paddingY = img.height * 0.05; 
 
         const x = img.width - logoWidth - paddingX;
         const y = img.height - logoHeight - paddingY;
