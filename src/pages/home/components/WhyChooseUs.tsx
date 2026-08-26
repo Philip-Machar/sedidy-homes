@@ -2,28 +2,33 @@ import { whyChooseFeatures } from '@/mocks/properties';
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-20 px-4 overflow-hidden">
+    <section className="py-20 md:py-32 px-4 overflow-hidden bg-background-50/50">
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+          
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground-950 mb-6">
-              Why Choose Sedidy Homes
+            <span className="text-[10px] uppercase tracking-[0.2em] text-primary-500 font-bold mb-4 block">
+              Why Choose Us
+            </span>
+            <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-foreground-950 mb-6 leading-tight">
+              The Sedidy <span className="italic text-primary-400 font-light">Advantage</span>
             </h2>
-            <p className="text-foreground-500 text-lg mb-8">
-              We combine market expertise, transparent practices, and client-centric
-              solutions to deliver exceptional real estate experiences.
+            <div className="w-12 h-1 bg-accent-500 mb-8 rounded-full" />
+            <p className="text-foreground-500 text-lg mb-12 font-light leading-relaxed">
+              We combine deep market expertise, transparent practices, and bespoke client-centric solutions to deliver an elite real estate experience in Kenya.
             </p>
-            <div className="space-y-4">
+            
+            <div className="space-y-8">
               {whyChooseFeatures.map((feature) => (
-                <div key={feature.title} className="flex gap-4">
-                  <div className="shrink-0 w-10 h-10 rounded-lg bg-primary-500/10 flex items-center justify-center">
-                    <i className={`${feature.icon} text-primary-600 text-lg`} />
+                <div key={feature.title} className="flex gap-6 group">
+                  <div className="shrink-0 w-14 h-14 rounded-[1.25rem] bg-white dark:bg-black/20 border border-black/5 dark:border-white/10 shadow-sm flex items-center justify-center transition-transform group-hover:scale-110 duration-300">
+                    <i className={`${feature.icon} text-primary-500 text-2xl`} />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-foreground-950 mb-1">
+                    <h3 className="font-bold text-foreground-950 mb-2 tracking-wide">
                       {feature.title}
                     </h3>
-                    <p className="text-foreground-500 text-sm">
+                    <p className="text-foreground-500 text-sm leading-relaxed font-light">
                       {feature.description}
                     </p>
                   </div>
@@ -31,24 +36,33 @@ export default function WhyChooseUs() {
               ))}
             </div>
           </div>
-          <div className="relative">
-            <div className="relative aspect-[16/10] rounded-xl overflow-hidden">
+
+          <div className="relative mt-10 lg:mt-0">
+            <div className="relative aspect-[4/5] md:aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl">
               <img
-                src="https://readdy.ai/api/search-image?query=Modern%20elegant%20real%20estate%20office%20interior%20with%20a%20diverse%20African%20professional%20team%20discussing%20property%20plans%20around%20a%20wooden%20table%2C%20warm%20natural%20lighting%20through%20large%20windows%2C%20potted%20plants%2C%20sophisticated%20yet%20welcoming%20atmosphere%2C%20clean%20architectural%20photography%20style%2C%20warm%20neutral%20tones%2C%20high%20detail&width=800&height=500&seq=why-choose-sedidy-01&orientation=landscape"
-                alt="Why Choose Sedidy Homes"
-                className="w-full h-full object-cover rounded-xl"
+                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop"
+                alt="Sedidy Homes Excellence"
+                className="w-full h-full object-cover"
               />
             </div>
-            <div className="absolute -bottom-6 -right-6 bg-primary-500 text-primary-foreground rounded-lg p-6 shadow-xl max-w-xs hidden md:block">
-              <p className="text-sm font-semibold mb-2">
-                Over 10 Years of Excellence
-              </p>
-              <p className="text-xs opacity-90">
-                Trusted by thousands of clients for reliable and transparent real
-                estate solutions
+            
+            {/* Elegant Floating Glass Card */}
+            <div className="absolute -bottom-10 -left-6 md:-left-12 bg-white/70 dark:bg-black/60 backdrop-blur-2xl border border-white/40 dark:border-white/10 rounded-[2rem] p-8 shadow-[0_20px_40px_rgba(0,0,0,0.1)] max-w-sm">
+              <div className="flex items-center gap-4 mb-4">
+                <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white">
+                  <i className="ri-award-fill text-2xl" />
+                </div>
+                <div>
+                  <p className="text-2xl font-bold text-foreground-950 font-heading">15+ Years</p>
+                  <p className="text-xs uppercase tracking-widest text-primary-600 font-bold">Of Excellence</p>
+                </div>
+              </div>
+              <p className="text-sm text-foreground-600 leading-relaxed font-light">
+                Trusted by high-net-worth individuals and corporate clients for reliable, transparent, and discreet real estate solutions.
               </p>
             </div>
           </div>
+
         </div>
       </div>
     </section>

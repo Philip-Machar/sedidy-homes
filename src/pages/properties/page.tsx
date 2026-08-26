@@ -17,7 +17,6 @@ const furnishingOptions = ['All Furnishing', 'Furnished', 'Unfurnished', 'Semi-F
 const bedroomOptions = ['Bedrooms', '1', '2', '3', '4', '5+'];
 const priceRanges = ['All Prices', 'Under 5M', '5M - 15M', '15M - 50M', '50M+'];
 
-// Ultra-safe price parser to prevent crashes on malformed data
 function parsePrice(price: any): number {
   if (!price) return 0;
   if (typeof price === 'number') return price;
@@ -35,18 +34,16 @@ export default function PropertiesPage() {
   const [furnishing, setFurnishing] = useState('All Furnishing');
   const [bedrooms, setBedrooms] = useState('Bedrooms');
   const [priceRange, setPriceRange] = useState('All Prices');
-  const [visibleCount, setVisibleCount] = useState(20);
+  const [visibleCount, setVisibleCount] = useState(12);
 
-  // Safely fetch properties and guarantee loading state completes
   useEffect(() => {
     let mounted = true;
     async function loadProperties() {
       try {
-        const fetchedProperties = await fetchAllProperties();
+        const fetchedProperties = await fetchAllProperties('published');
         if (mounted) {
-          // Combine and remove any accidental duplicates
-          const combined = [...featuredProperties, ...fetchedProperties];
-          const unique = Array.from(new Map(combined.map(p => [p.id, p])).values());
+          // Strictly real properties, removing duplicates
+          const unique = Array.from(new Map(fetchedProperties.map(p => [p.id, p])).values());
           setProperties(unique);
         }
       } catch (error) {
@@ -59,7 +56,6 @@ export default function PropertiesPage() {
     return () => { mounted = false; };
   }, []);
 
-  // Bulletproof filtering to prevent React crashes on undefined fields
   const filtered = useMemo(() => {
     try {
       let result = [...properties];
@@ -103,7 +99,7 @@ export default function PropertiesPage() {
       return result;
     } catch (err) {
       console.error("Filter error:", err);
-      return properties; // Fallback to show all properties rather than a white screen
+      return properties;
     }
   }, [properties, activeCategory, searchQuery, sortBy, transactionType]);
 
@@ -125,155 +121,112 @@ export default function PropertiesPage() {
       <Navbar />
       <div className="h-16 md:h-20" />
 
-      {/* Hero Header */}
-      <section className="relative overflow-hidden bg-primary-500 py-16 md:py-24">
-        <div className="absolute top-0 right-0 w-72 h-72 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-0 left-0 w-56 h-56 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="max-w-2xl">
-            <span className="inline-block px-3 py-1 bg-white/10 text-white/90 text-[11px] font-medium rounded-full mb-4">
-              Find Your Dream Property
-            </span>
-            <h1 className="text-3xl md:text-4xl font-bold text-white mt-2 tracking-tight">
-              Find Your Dream Property
-            </h1>
-            <p className="text-white/70 mt-4 text-base md:text-lg leading-relaxed max-w-xl">
-              Explore our extensive collection of premium properties across Kenya. Filter by location, price, and type to find exactly what you&apos;re looking for.
-            </p>
-          </div>
+      {/* Premium Dark Hero Header */}
+      <section className="relative overflow-hidden bg-black py-20 md:py-32">
+        <div className="absolute inset-0 overflow-hidden">
+          <div
+            className="absolute inset-0 bg-cover bg-center opacity-40 scale-105"
+            style={{
+              backgroundImage: 'url(https://images.unsplash.com/photo-1512917774080-9991f1c4c750?q=80&w=2070&auto=format&fit=crop)',
+            }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent" />
         </div>
-      </section>
-
-      {/* Filters Bar */}
-      <section className="z-30 bg-background-50 border-b border-background-200/60 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Search Row */}
-          <div className="flex flex-col sm:flex-row gap-3 mb-4">
-            <div className="relative flex-1">
-              <i className="ri-search-line absolute left-3 top-1/2 -translate-y-1/2 text-foreground-400 text-sm" />
-              <input
-                type="text"
-                placeholder="Search by property name or location..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-background-200 bg-card text-foreground-950 placeholder:text-foreground-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 transition-all"
-              />
-            </div>
-            <button className="px-6 py-2.5 bg-primary-500 text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-colors whitespace-nowrap flex items-center justify-center gap-2">
-              <i className="ri-search-line" />
-              Search
-            </button>
-          </div>
-
-          {/* Filter Dropdowns */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap gap-2">
-            <FilterDropdown
-              options={transactionTypes.map((t) => ({ label: t, value: t }))}
-              value={transactionType}
-              onChange={setTransactionType}
-            />
-            <FilterDropdown
-              options={[{ label: 'All Property Type', value: 'All' }, ...propertyCategories.filter((c) => c !== 'All').map((c) => ({ label: c, value: c }))]}
-              value={activeCategory}
-              onChange={setActiveCategory}
-            />
-            <FilterDropdown
-              options={furnishingOptions.map((f) => ({ label: f, value: f }))}
-              value={furnishing}
-              onChange={setFurnishing}
-            />
-            <FilterDropdown
-              options={bedroomOptions.map((b) => ({ label: b, value: b }))}
-              value={bedrooms}
-              onChange={setBedrooms}
-            />
-            <FilterDropdown
-              options={priceRanges.map((p) => ({ label: p, value: p }))}
-              value={priceRange}
-              onChange={setPriceRange}
-            />
-            <FilterDropdown
-              options={sortOptions}
-              value={sortBy}
-              onChange={setSortBy}
-            />
-
-            <button
-              onClick={handleReset}
-              className="px-4 py-2 rounded-lg bg-accent-500 text-background-50 dark:text-foreground-950 text-[13px] font-medium hover:bg-accent-600 transition-colors whitespace-nowrap shrink-0"
-            >
-              Reset
-            </button>
-          </div>
-
-          <p className="text-[13px] text-foreground-500 mt-3">
-            Showing <span className="text-foreground-700 font-semibold tabular-nums">{visible.length}</span> of{' '}
-            <span className="text-foreground-700 font-semibold tabular-nums">{filtered.length}</span> properties
+        
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+          <span className="inline-block px-4 py-1.5 border border-white/20 text-white/90 text-[10px] font-bold uppercase tracking-[0.2em] rounded-full mb-6 backdrop-blur-md animate-fade-up">
+            Portfolio
+          </span>
+          <h1 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 tracking-tight animate-fade-up-delayed">
+            Find Your <span className="italic text-primary-400 font-light">Dream Property</span>
+          </h1>
+          <p className="text-white/70 max-w-2xl mx-auto text-base md:text-lg font-light leading-relaxed animate-fade-up-delayed-2">
+            Explore our extensive collection of premium properties across Kenya. Filter by location, price, and type to find exactly what you are looking for.
           </p>
         </div>
       </section>
 
-      {/* Property Grid */}
-      <section className="py-10 md:py-14">
+      {/* Normal Scrolling Glassmorphic Filter Bar (Removed 'sticky top-*') */}
+      <section className="relative z-30 py-6 md:py-8 bg-background-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="flex flex-col lg:flex-row gap-4 md:gap-5">
+            {/* Search Input (Pill Shaped) */}
+            <div className="relative flex-1 lg:max-w-md group">
+              <i className="ri-search-line absolute left-5 top-1/2 -translate-y-1/2 text-foreground-400 text-lg group-focus-within:text-primary-500 transition-colors" />
+              <input
+                type="text"
+                placeholder="Search location or keyword..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-12 pr-6 py-3.5 rounded-full border border-black/5 dark:border-white/10 bg-white/60 dark:bg-black/20 backdrop-blur-md text-foreground-950 placeholder:text-foreground-400 text-[13px] font-semibold tracking-wide focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white dark:focus:bg-card transition-all duration-300 shadow-sm hover:bg-white dark:hover:bg-black/40"
+              />
+            </div>
+
+            {/* Filters (Pill Shaped) */}
+            <div className="flex flex-wrap items-center gap-3 md:gap-4 flex-1">
+              <FilterDropdown options={transactionTypes.map((t) => ({ label: t, value: t }))} value={transactionType} onChange={setTransactionType} />
+              <FilterDropdown options={[{ label: 'All Types', value: 'All' }, ...propertyCategories.filter((c) => c !== 'All').map((c) => ({ label: c, value: c }))]} value={activeCategory} onChange={setActiveCategory} />
+              <FilterDropdown options={furnishingOptions.map((f) => ({ label: f, value: f }))} value={furnishing} onChange={setFurnishing} />
+              <FilterDropdown options={sortOptions} value={sortBy} onChange={setSortBy} />
+              
+              <button
+                onClick={handleReset}
+                className="px-6 py-3.5 rounded-full bg-background-200/50 dark:bg-white/5 border border-transparent text-foreground-600 hover:border-black/5 dark:hover:border-white/10 hover:bg-white dark:hover:bg-black/40 hover:text-foreground-950 text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 ml-auto shadow-sm"
+              >
+                Reset
+              </button>
+            </div>
+          </div>
+          
+        </div>
+      </section>
+
+      {/* Property Grid */}
+      <section className="py-12 md:py-16 bg-background-50/50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          
+          <div className="mb-8 flex items-center justify-between">
+            <p className="text-sm text-foreground-500 font-medium">
+              Showing <span className="text-foreground-950 font-bold">{visible.length}</span> of <span className="text-foreground-950 font-bold">{filtered.length}</span> properties
+            </p>
+          </div>
+
           {loading ? (
-            <div className="text-center py-20">
-              <i className="ri-loader-4-line text-4xl animate-spin text-primary-500 mb-4 inline-block" />
-              <p className="text-sm text-foreground-500">Loading properties...</p>
+            <div className="text-center py-32 flex flex-col items-center">
+              <div className="w-12 h-12 border-2 border-primary-100 border-t-primary-500 rounded-full animate-spin mb-4" />
+              <p className="text-foreground-500 font-medium tracking-widest uppercase text-xs">Loading Catalog...</p>
             </div>
           ) : filtered.length === 0 ? (
-            <div className="text-center py-20">
-              <div className="w-16 h-16 bg-background-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i className="ri-search-line text-2xl text-foreground-400" />
-              </div>
-              <h3 className="text-lg font-semibold text-foreground-800 mb-1">No properties found</h3>
-              <p className="text-sm text-foreground-500">Try adjusting your filters or search query.</p>
+            <div className="text-center py-32 bg-white dark:bg-card rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-sm max-w-3xl mx-auto">
+              <i className="ri-search-line text-5xl text-foreground-300 mb-6 block" />
+              <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">No matches found</h3>
+              <p className="text-foreground-500 text-sm max-w-md mx-auto mb-8">We couldn't find any properties matching your exact criteria. Try adjusting your filters or search terms.</p>
+              <button onClick={handleReset} className="px-8 py-3.5 bg-foreground-950 text-background-50 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-primary-600 transition-all shadow-lg hover:-translate-y-1">
+                Clear Filters
+              </button>
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
                 {visible.map((property) => (
                   <PropertyCard key={property.id} property={property} />
                 ))}
               </div>
+
               {hasMore && (
-                <div className="text-center mt-10">
+                <div className="text-center mt-16">
                   <button
                     onClick={() => setVisibleCount((c) => c + 12)}
-                    className="inline-flex items-center gap-2 px-8 py-3 rounded-lg bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 transition-colors"
+                    className="inline-flex items-center gap-3 px-10 py-4 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-[0.15em] text-xs hover:bg-foreground-950 hover:text-white transition-all duration-300 group"
                   >
-                    View More
-                    <i className="ri-arrow-down-s-line" />
+                    Load More Properties
+                    <i className="ri-arrow-down-line text-base group-hover:translate-y-1 transition-transform" />
                   </button>
                 </div>
               )}
             </>
           )}
-        </div>
-      </section>
-
-      {/* CTA Banner */}
-      <section className="py-16 px-4">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative overflow-hidden rounded-2xl bg-primary-500 px-8 py-12 md:px-16 md:py-16 text-center">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl pointer-events-none" />
-            <div className="relative z-10">
-              <h2 className="text-2xl md:text-3xl font-bold text-white mb-3">
-                Can&apos;t Find What You&apos;re Looking For?
-              </h2>
-              <p className="text-white/70 max-w-lg mx-auto mb-6 text-sm md:text-base">
-                Let us know your requirements and our team will curate a personalized list of properties just for you.
-              </p>
-              <a
-                href="/contact"
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-white text-primary-700 font-semibold text-sm hover:bg-background-50 transition-colors"
-              >
-                <i className="ri-mail-send-line" />
-                Get in Touch
-              </a>
-            </div>
-          </div>
         </div>
       </section>
 

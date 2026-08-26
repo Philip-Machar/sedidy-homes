@@ -10,70 +10,76 @@ export default function ExploreProperties() {
 
   useEffect(() => {
     async function loadProperties() {
-      const data = await fetchAllProperties();
+      // Fetch all published properties
+      const data = await fetchAllProperties('published');
       setProperties(data);
       setLoading(false);
     }
     loadProperties();
   }, []);
 
-  const filtered =
+  // Filter by category and strictly limit to 12 properties
+  const filtered = (
     activeCategory === 'All'
       ? properties
-      : properties.filter(
-          (p) => p.type.toLowerCase() === activeCategory.toLowerCase()
-        );
+      : properties.filter((p) => p.type.toLowerCase() === activeCategory.toLowerCase())
+  ).slice(0, 12);
 
   return (
-    <section className="py-16 md:py-24 bg-background-100/30">
+    <section className="py-20 md:py-32 bg-background-50/50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-8">
+        
+        {/* High-end Editorial Header with View All Button */}
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="text-[11px] uppercase tracking-widest text-primary-600 font-semibold">
-              Browse Listings
+            <span className="text-[10px] uppercase tracking-[0.2em] text-primary-500 font-bold mb-4 block">
+              Browse Our Portfolio
             </span>
-            <h2 className="text-2xl md:text-3xl font-bold text-foreground-950 mt-1.5 tracking-tight">
-              Explore Properties
+            <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-foreground-950 mb-6 md:mb-0">
+              Explore <span className="italic text-primary-400 font-light">Properties</span>
             </h2>
+            <div className="w-12 h-1 bg-accent-500 rounded-full mt-6 hidden md:block" />
           </div>
+          
           <a
             href="/properties"
-            className="inline-flex items-center gap-1.5 text-sm font-medium text-foreground-500 hover:text-foreground-950 transition-colors group shrink-0"
+            className="inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-widest text-[11px] hover:bg-foreground-950 hover:text-white transition-all duration-300 group shrink-0 md:mb-4"
           >
-            View all properties
-            <i className="ri-arrow-right-line text-sm group-hover:translate-x-0.5 transition-transform" />
+            View All Properties
+            <i className="ri-arrow-right-line text-sm group-hover:translate-x-1 transition-transform" />
           </a>
         </div>
 
-        {/* Categories Tab */}
-        <div className="hidden md:flex flex-wrap gap-1.5 mb-8">
+        {/* Pill-Shaped Glass Categories */}
+        <div className="flex flex-wrap gap-3 mb-12">
           {propertyCategories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`relative px-4 py-2 rounded-lg text-[13px] font-medium transition-colors duration-200 ${
+              className={`px-6 py-3 rounded-full text-sm font-semibold tracking-wide transition-all duration-300 shadow-sm border ${
                 activeCategory === cat
-                  ? 'text-primary-foreground'
-                  : 'text-foreground-500 hover:text-foreground-950 hover:bg-foreground-950/[0.04]'
+                  ? 'bg-foreground-950 text-white border-foreground-950 shadow-lg scale-105'
+                  : 'bg-white/60 dark:bg-black/20 backdrop-blur-md text-foreground-600 border-black/5 dark:border-white/10 hover:bg-white dark:hover:bg-black/40 hover:border-black/10 hover:text-foreground-950'
               }`}
             >
-              {activeCategory === cat && (
-                <div className="absolute inset-0 bg-primary-500 rounded-lg" />
-              )}
-              <span className="relative z-10">{cat}</span>
+              {cat}
             </button>
           ))}
         </div>
 
-        {/* Loading / Grid */}
+        {/* Grid */}
         {loading ? (
+          <div className="text-center py-20 flex flex-col items-center">
+            <div className="w-12 h-12 border-2 border-primary-100 border-t-primary-500 rounded-full animate-spin mb-4" />
+            <p className="text-foreground-500 font-medium tracking-widest uppercase text-xs">Loading Portfolio...</p>
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-16">
-            <i className="ri-loader-4-line text-3xl animate-spin text-primary-500" />
-            <p className="text-sm text-foreground-500 mt-2">Loading properties...</p>
+            <i className="ri-building-4-line text-4xl text-foreground-300 mb-3 block" />
+            <p className="text-foreground-500 text-sm">No properties found in this category.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
             {filtered.map((property) => (
               <PropertyCard key={property.id} property={property} />
             ))}
