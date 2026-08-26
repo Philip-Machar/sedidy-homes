@@ -1,181 +1,134 @@
 export default function Footer() {
+  const currentYear = new Date().getFullYear();
+
   return (
-    <footer className="bg-card border-t border-background-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
-          {/* Brand */}
-          <div className="lg:col-span-1">
-            <a className="flex items-center gap-2 mb-4" href="/">
-              <div className="w-10 h-10 rounded-md overflow-hidden flex items-center justify-center shrink-0">
-                <img
-                  src="https://static.readdy.ai/image/fe5858082443eeff1e1c88cf3b867878/edd0819509b061b2db54eb05bd38ce9d.webp"
-                  alt="Sedidy Homes"
-                  width={40}
-                  height={40}
-                  className="object-cover w-full h-full"
-                />
+    <footer className="bg-card border-t border-background-200 pt-16 pb-8 mt-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-10 lg:gap-8 mb-16">
+          
+          {/* Brand & Contact Column (Takes up 2 columns on large screens) */}
+          <div className="lg:col-span-2">
+            <a href="/" className="inline-flex items-center gap-2 mb-6">
+              <div className="w-10 h-10 bg-primary-500 rounded-xl flex items-center justify-center shadow-lg shadow-primary-500/20">
+                <i className="ri-home-smile-fill text-white text-xl" />
               </div>
-              <span className="font-bold text-lg text-foreground-950">
+              <span className="text-xl font-bold text-foreground-950 tracking-tight">
                 Sedidy Homes
               </span>
             </a>
-            <p className="text-foreground-500 text-sm mb-6 leading-relaxed">
-              Your trusted partner in finding the perfect property. Premium real
-              estate solutions for every lifestyle and investment goal.
+            <p className="text-sm text-foreground-500 leading-relaxed max-w-sm mb-8">
+              Nairobi's premier real estate agency. We specialize in luxury properties, commercial spaces, and helping you find the perfect place to call home across Kenya.
             </p>
+            
             <div className="space-y-3">
-              <a
-                href="tel:+254796476637"
-                className="flex items-center gap-3 group hover:opacity-80 transition-opacity"
-              >
-                <i className="ri-phone-line text-foreground-400 text-sm" />
-                <span className="text-sm text-foreground-500">
-                  +254 796 476 637
-                </span>
+              <a href="mailto:hello@sedidyhomes.com" className="flex items-center gap-3 text-sm text-foreground-600 hover:text-primary-600 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-background-100 flex items-center justify-center shrink-0">
+                  <i className="ri-mail-send-line" />
+                </div>
+                hello@sedidyhomes.com
               </a>
-              <a
-                href="mailto:info@sedidyhomes.com"
-                className="flex items-center gap-3 group hover:opacity-80 transition-opacity"
-              >
-                <i className="ri-mail-line text-foreground-400 text-sm" />
-                <span className="text-sm text-foreground-500">
-                  info@sedidyhomes.com
-                </span>
+              <a href="tel:+254700000000" className="flex items-center gap-3 text-sm text-foreground-600 hover:text-primary-600 transition-colors">
+                <div className="w-8 h-8 rounded-full bg-background-100 flex items-center justify-center shrink-0">
+                  <i className="ri-phone-line" />
+                </div>
+                +254 700 000 000
               </a>
-              <div className="flex items-center gap-3">
-                <i className="ri-map-pin-line text-foreground-400 text-sm" />
-                <span className="text-sm text-foreground-500">Riverside Drive, Nairobi, Kenya</span>
+              <div className="flex items-center gap-3 text-sm text-foreground-600">
+                <div className="w-8 h-8 rounded-full bg-background-100 flex items-center justify-center shrink-0">
+                  <i className="ri-map-pin-line" />
+                </div>
+                Nairobi, Kenya
               </div>
             </div>
           </div>
 
-          {/* Quick Links */}
+          {/* Quick Links Column */}
           <div>
-            <h3 className="font-semibold text-foreground-950 mb-4 text-sm uppercase tracking-wide">
-              Quick Links
-            </h3>
-            <ul className="space-y-3">
-              {[
-                { label: 'Browse Properties', href: '/properties' },
-                { label: 'For Sellers', href: '/sellers-buyers#sellers' },
-                { label: 'For Buyers', href: '/sellers-buyers#buyers' },
-                { label: 'For Investors', href: '/sellers-buyers#investors' },
-              ].map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-foreground-500 hover:text-primary-600 transition-colors flex items-center gap-1 group"
-                  >
-                    <span>{link.label}</span>
-                    <i className="ri-arrow-right-line text-xs opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-sm font-bold text-foreground-950 uppercase tracking-wider mb-6">Quick Links</h3>
+            <ul className="space-y-3.5">
+              <li>
+                <a href="/properties" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Browse Properties</a>
+              </li>
+              <li>
+                <a href="/list-with-us" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">List Your Property</a>
+              </li>
+              <li>
+                <a href="/about" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">About Us</a>
+              </li>
+              <li>
+                <a href="/services" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Our Services</a>
+              </li>
+              <li>
+                <a href="/contact" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Contact Support</a>
+              </li>
             </ul>
           </div>
 
-          {/* Company */}
+          {/* Property Types Column */}
           <div>
-            <h3 className="font-semibold text-foreground-950 mb-4 text-sm uppercase tracking-wide">
-              Company
-            </h3>
-            <ul className="space-y-3">
-              {[
-                { label: 'About Us', href: '/about' },
-                { label: 'Our Team', href: '/our-team' },
-                { label: 'Careers', href: '/careers' },
-                { label: 'Blog', href: '/blog' },
-              ].map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-foreground-500 hover:text-primary-600 transition-colors flex items-center gap-1 group"
-                  >
-                    <span>{link.label}</span>
-                    <i className="ri-arrow-right-line text-xs opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-sm font-bold text-foreground-950 uppercase tracking-wider mb-6">Property Types</h3>
+            <ul className="space-y-3.5">
+              <li>
+                <a href="/properties?search=House" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Houses & Mansions</a>
+              </li>
+              <li>
+                <a href="/properties?search=Apartment" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Luxury Apartments</a>
+              </li>
+              <li>
+                <a href="/properties?search=Villa" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Holiday Villas</a>
+              </li>
+              <li>
+                <a href="/properties?search=Commercial" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Commercial Spaces</a>
+              </li>
+              <li>
+                <a href="/properties?search=Land" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Plots & Land</a>
+              </li>
             </ul>
           </div>
 
-          {/* Legal */}
+          {/* Prime Locations Column */}
           <div>
-            <h3 className="font-semibold text-foreground-950 mb-4 text-sm uppercase tracking-wide">
-              Legal
-            </h3>
-            <ul className="space-y-3">
-              {[
-                { label: 'Privacy Policy', href: '/privacy-policy' },
-                { label: 'Terms & Conditions', href: '/terms-conditions' },
-                { label: 'Cookie Policy', href: '/cookie-policy' },
-                { label: 'Disclaimer', href: '/disclaimer' },
-              ].map((link) => (
-                <li key={link.label}>
-                  <a
-                    href={link.href}
-                    className="text-sm text-foreground-500 hover:text-primary-600 transition-colors flex items-center gap-1 group"
-                  >
-                    <span>{link.label}</span>
-                    <i className="ri-arrow-right-line text-xs opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all" />
-                  </a>
-                </li>
-              ))}
+            <h3 className="text-sm font-bold text-foreground-950 uppercase tracking-wider mb-6">Prime Locations</h3>
+            <ul className="space-y-3.5">
+              <li>
+                <a href="/properties?search=Karen" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Karen</a>
+              </li>
+              <li>
+                <a href="/properties?search=Runda" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Runda</a>
+              </li>
+              <li>
+                <a href="/properties?search=Westlands" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Westlands</a>
+              </li>
+              <li>
+                <a href="/properties?search=Riverside" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Riverside</a>
+              </li>
+              <li>
+                <a href="/properties?search=Kilimani" className="text-sm text-foreground-500 hover:text-primary-600 transition-colors">Kilimani</a>
+              </li>
             </ul>
           </div>
+
         </div>
 
-        <div className="border-t border-background-200 pt-8 mb-8" />
-
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+        {/* Bottom Bar: Copyright & Socials */}
+        <div className="pt-8 border-t border-background-200 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-sm text-foreground-500 text-center md:text-left">
-            &copy; 2026 Sedidy Homes. All rights reserved. |{' '}
-            <span className="text-xs">Home Sweet Home</span>
+            © {currentYear} Sedidy Homes. All rights reserved.
           </p>
-          <div className="flex items-center gap-2">
-            {[
-              {
-                label: 'Facebook',
-                href: 'https://www.facebook.com',
-                icon: 'ri-facebook-fill',
-              },
-              {
-                label: 'Twitter',
-                href: 'https://x.com',
-                icon: 'ri-twitter-x-fill',
-              },
-              {
-                label: 'Instagram',
-                href: 'https://www.instagram.com',
-                icon: 'ri-instagram-line',
-              },
-              {
-                label: 'LinkedIn',
-                href: 'https://www.linkedin.com',
-                icon: 'ri-linkedin-fill',
-              },
-              {
-                label: 'TikTok',
-                href: 'https://www.tiktok.com',
-                icon: 'ri-tiktok-fill',
-              },
-              {
-                label: 'Youtube',
-                href: 'https://www.youtube.com',
-                icon: 'ri-youtube-fill',
-              },
-            ].map((social) => (
-              <a
-                key={social.label}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                className="w-9 h-9 rounded-full flex items-center justify-center bg-background-100 hover:bg-primary-500 hover:text-primary-foreground text-foreground-500 transition-all duration-200"
-              >
-                <i className={`${social.icon} text-sm`} />
-              </a>
-            ))}
+          
+          <div className="flex items-center gap-4">
+            <a href="#" className="w-9 h-9 rounded-full bg-background-100 flex items-center justify-center text-foreground-500 hover:bg-primary-50 hover:text-primary-600 transition-colors" aria-label="Facebook">
+              <i className="ri-facebook-fill" />
+            </a>
+            <a href="#" className="w-9 h-9 rounded-full bg-background-100 flex items-center justify-center text-foreground-500 hover:bg-primary-50 hover:text-primary-600 transition-colors" aria-label="Instagram">
+              <i className="ri-instagram-line" />
+            </a>
+            <a href="#" className="w-9 h-9 rounded-full bg-background-100 flex items-center justify-center text-foreground-500 hover:bg-primary-50 hover:text-primary-600 transition-colors" aria-label="Twitter">
+              <i className="ri-twitter-x-line" />
+            </a>
+            <a href="#" className="w-9 h-9 rounded-full bg-background-100 flex items-center justify-center text-foreground-500 hover:bg-primary-50 hover:text-primary-600 transition-colors" aria-label="LinkedIn">
+              <i className="ri-linkedin-fill" />
+            </a>
           </div>
         </div>
       </div>
