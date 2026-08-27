@@ -1,3 +1,4 @@
+// File: src/components/feature/Footer.tsx
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
@@ -109,11 +110,22 @@ export default function Footer() {
 
         {/* Bottom Bar: Copyright & Socials */}
         <div className="pt-8 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
-          <p className="text-xs text-foreground-400 text-center md:text-left font-light tracking-wide">
+          <p className="text-xs text-foreground-400 text-center md:text-left font-light tracking-wide flex items-center gap-2">
             © {currentYear} Sedidy Homes. All rights reserved.
           </p>
           
           <div className="flex items-center gap-3">
+            {/* The Discreet Admin Entry Point */}
+            <a 
+              href="/admin" 
+              className="w-10 h-10 rounded-full flex items-center justify-center text-foreground-300 hover:text-primary-500 transition-colors"
+              title="Admin Portal"
+            >
+              <i className="ri-lock-2-line text-lg" />
+            </a>
+            
+            <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
+
             {[
               { icon: 'ri-facebook-fill', label: 'Facebook' },
               { icon: 'ri-instagram-line', label: 'Instagram' },

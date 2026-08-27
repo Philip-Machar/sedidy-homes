@@ -16,7 +16,8 @@ import ManageListings from "../pages/admin/ManageListings";
 import EditProperty from "../pages/admin/EditProperty";       
 import BlogDashboard from "../pages/admin/BlogDashboard";
 import WriteBlogPage from "../pages/admin/WriteBlogPage";
-import EditBlogPage from "../pages/admin/EditBlogPage"; // <-- Import the new page here
+import EditBlogPage from "../pages/admin/EditBlogPage";
+import AdminDashboard from "../pages/admin/Dashboard"; // <-- Import the Hub
 
 const routes: RouteObject[] = [
   { path: "/", element: <Home /> },
@@ -30,13 +31,14 @@ const routes: RouteObject[] = [
   { path: "/list-with-us", element: <SubmitListingPage /> },
   
   // Admin Routes
+  { path: "/admin", element: <AdminDashboard /> }, // <-- Add the Hub route here
   { path: "/admin/upload-property", element: <UploadProperty /> },
   { path: "/admin/review-listings", element: <ReviewListings /> },
   { path: "/admin/manage-listings", element: <ManageListings /> }, 
   { path: "/admin/edit-property/:id", element: <EditProperty /> }, 
   { path: "/admin/blog", element: <BlogDashboard /> },             
   { path: "/admin/write-blog", element: <WriteBlogPage /> },       
-  { path: "/admin/edit-blog/:id", element: <EditBlogPage /> }, // <-- Define the route here
+  { path: "/admin/edit-blog/:id", element: <EditBlogPage /> }, 
   
   { path: "*", element: <NotFound /> },
 ];
