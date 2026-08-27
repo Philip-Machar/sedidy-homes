@@ -1,0 +1,142 @@
+// File: src/pages/admin/BlogDashboard.tsx
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { fetchAllBlogPosts, deleteBlogPost } from '@/services/blogService';
+
+export default function BlogDashboard() {
+  const navigate = useNavigate();
+  const [posts, setPosts] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [postToDelete, setPostToDelete] = useState<string | null>(null);
+
+  useEffect(() => {
+    async function loadPosts() {
+      const data = await fetchAllBlogPosts('all');
+      setPosts(data);
+      setLoading(false);
+    }
+    loadPosts();
+  }, []);
+
+  const totalPosts = posts.length;
+  const publishedPosts = posts.filter(p => p.status === 'published').length;
+  const draftPosts = posts.filter(p => p.status === 'draft').length;
+
+  const handleDeleteConfirm = async () => {
+    if (postToDelete) {
+      try {
+        await deleteBlogPost(postToDelete);
+        setPosts(posts.filter(post => post.id !== postToDelete));
+      } catch (error) {
+        console.error("Failed to delete post", error);
+        alert("Error deleting post.");
+      }
+      setPostToDelete(null);
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-background-50">
+      <header className="sticky top-0 z-50 bg-white/80 dark:bg-card/80 backdrop-blur-2xl border-b border-black/5 dark:border-white/5 px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between shadow-sm">
+        <div className="flex items-center gap-4">
+          <button onClick={() => navigate('/')} className="w-10 h-10 rounded-full bg-background-50 hover:bg-background-100 flex items-center justify-center transition-colors text-foreground-500">
+            <i className="ri-home-line text-xl" />
+          </button>
+          <div>
+            <span className="block text-[10px] font-bold uppercase tracking-widest text-primary-500">Admin Control</span>
+            <span className="block text-sm font-bold text-foreground-950">Editorial Dashboard</span>
+          </div>
+        </div>
+        <button onClick={() => navigate('/admin/write-blog')} className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-foreground-950 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-primary-600 transition-all shadow-md">
+          <i className="ri-pencil-line text-sm" />
+          <span className="hidden sm:inline">Write Article</span>
+        </button>
+      </header>
+
+      <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          {[
+            { label: 'Total Articles', value: totalPosts, icon: 'ri-article-line' },
+            { label: 'Published', value: publishedPosts, icon: 'ri-checkbox-circle-line' },
+            { label: 'Drafts', value: draftPosts, icon: 'ri-draft-line' },
+            { label: 'Total Views', value: '12.4k', icon: 'ri-eye-line' },
+          ].map((stat) => (
+            <div key={stat.label} className="bg-white dark:bg-card rounded-[2rem] p-6 border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col">
+              <div className="w-10 h-10 rounded-full bg-background-50 dark:bg-white/5 flex items-center justify-center text-primary-500 mb-4"><i className={`${stat.icon} text-lg`} /></div>
+              <span className="text-3xl font-heading font-bold text-foreground-950 mb-1">{stat.value}</span>
+              <span className="text-[10px] font-bold uppercase tracking-widest text-foreground-400">{stat.label}</span>
+            </div>
+          ))}
+        </div>
+
+        <div className="bg-white dark:bg-card rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] overflow-hidden">
+          <div className="px-8 py-6 border-b border-black/5 dark:border-white/5 flex items-center justify-between bg-background-50/50">
+            <h2 className="font-heading text-xl font-bold text-foreground-950">Manage Articles</h2>
+          </div>
+
+          <div className="overflow-x-auto">
+            {loading ? (
+              <div className="p-12 text-center text-foreground-400"><i className="ri-loader-4-line animate-spin text-2xl" /></div>
+            ) : (
+              <table className="w-full text-left border-collapse">
+                <thead>
+                  <tr className="border-b border-black/5 dark:border-white/5 text-[10px] font-bold uppercase tracking-widest text-foreground-400">
+                    <th className="px-8 py-5">Article</th>
+                    <th className="px-8 py-5">Category</th>
+                    <th className="px-8 py-5">Date</th>
+                    <th className="px-8 py-5">Status</th>
+                    <th className="px-8 py-5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-black/5 dark:divide-white/5">
+                  {posts.map((post) => (
+                    <tr key={post.id} className="hover:bg-background-50/50 transition-colors group">
+                      <td className="px-8 py-4">
+                        <div className="flex items-center gap-4">
+                          <img src={post.image} alt={post.title} className="w-12 h-12 rounded-xl object-cover shadow-sm" />
+                          <div>
+                            <p className="text-sm font-bold text-foreground-950 line-clamp-1">{post.title}</p>
+                            <p className="text-xs text-foreground-500 mt-0.5">{post.author}</p>
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-8 py-4"><span className="inline-block px-3 py-1 bg-background-100 text-[10px] font-bold uppercase rounded-full">{post.category}</span></td>
+                      <td className="px-8 py-4 text-xs font-medium text-foreground-600">{post.date}</td>
+                      <td className="px-8 py-4">
+                        {post.status === 'draft' ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold uppercase rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />Draft</span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-green-50 text-green-600 text-[10px] font-bold uppercase rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-green-500" />Published</span>
+                        )}
+                      </td>
+                      <td className="px-8 py-4 text-right">
+                        <button onClick={() => setPostToDelete(post.id)} className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-foreground-500 hover:text-red-500 hover:border-red-200 shadow-sm transition-all" title="Delete">
+                          <i className="ri-delete-bin-line text-sm" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+        </div>
+      </main>
+
+      {postToDelete && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center px-4">
+          <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => setPostToDelete(null)} />
+          <div className="relative bg-white dark:bg-card w-full max-w-sm rounded-[2.5rem] p-8 shadow-2xl text-center">
+            <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-red-500 mx-auto mb-6"><i className="ri-error-warning-line text-3xl" /></div>
+            <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">Delete Article?</h3>
+            <p className="text-sm text-foreground-500 mb-8 font-light leading-relaxed">This action cannot be undone.</p>
+            <div className="flex flex-col gap-3">
+              <button onClick={handleDeleteConfirm} className="w-full py-3.5 rounded-full bg-red-500 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-red-600 shadow-md">Yes, Delete</button>
+              <button onClick={() => setPostToDelete(null)} className="w-full py-3.5 rounded-full bg-background-50 text-foreground-950 border border-black/5 text-[11px] font-bold uppercase tracking-widest">Cancel</button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
