@@ -1,9 +1,11 @@
+// File: src/pages/property/page.tsx
 import { useState, useMemo, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import PropertyCard from '@/pages/home/components/PropertyCard';
 import ImageGallery from '@/pages/property/components/ImageGallery';
+import SEO from '@/components/feature/SEO';
 import { type Property, featuredProperties } from '@/mocks/properties';
 import { fetchAllProperties } from '@/services/propertyService';
 
@@ -100,7 +102,6 @@ export default function PropertyDetailPage() {
     );
   }
 
-  // Smart map parser logic
   const rawMapInput = ((property as any).mapLocation || property.location || '').trim();
   let mapIframeSrc = '';
   let externalMapLink = '';
@@ -126,14 +127,43 @@ export default function PropertyDetailPage() {
     setShareOpen(false);
   };
 
+  // Generate Google Schema for this specific property
+  const listingSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "RealEstateListing",
+    "name": property.title,
+    "description": property.description,
+    "image": images[0] || property.image,
+    "url": `https://www.kenyaclassichomes.com/properties/${property.id}`,
+    "datePosted": (property as any).createdAt ? new Date((property as any).createdAt).toISOString() : new Date().toISOString(),
+    "offers": {
+      "@type": "Offer",
+      "price": property.price?.replace(/,/g, ''),
+      "priceCurrency": property.currency || "KES",
+      "availability": "https://schema.org/InStock",
+      "itemOffered": {
+        "@type": "Apartment",
+        "name": property.title,
+        "numberOfRooms": property.beds,
+        "numberOfBathroomsTotal": property.baths,
+      }
+    }
+  });
+
   return (
     <div className="min-h-screen bg-background-50">
+      <SEO 
+        title={`${property.title} | Sedidy Homes`}
+        description={property.description?.substring(0, 160) + '...'}
+        image={images[0] || property.image}
+        url={`https://www.kenyaclassichomes.com/properties/${property.id}`}
+        schema={listingSchema}
+      />
       <Navbar />
       <div className="h-16 md:h-20" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
-        {/* Editorial Top Navigation */}
         <div className="flex items-center justify-between mb-8 animate-fade-up">
           <a
             href="/properties"
@@ -175,17 +205,18 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        {/* Hero Section of the Property */}
         <div className="mb-10 text-center md:text-left animate-fade-up-delayed">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
             <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm ${statusColor}`}>
               {statusLabel}
             </span>
+            
             {property.hotDeal && (
-              <span className="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] bg-orange-500 text-white shadow-sm">
+              <span className="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] bg-accent-500 text-foreground-950 shadow-sm">
                 Hot Deal
               </span>
             )}
+            
             {property.fullyFurnished && (
               <span className="px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] bg-white border border-black/10 dark:bg-white/10 dark:border-white/20 text-foreground-950 dark:text-white shadow-sm">
                 Fully Furnished
@@ -213,13 +244,10 @@ export default function PropertyDetailPage() {
 
         <ImageGallery images={images} title={property.title} />
 
-        {/* Layout Grid */}
         <div className="grid gap-10 lg:grid-cols-3 lg:items-start mt-12 md:mt-16 animate-fade-up-delayed-2">
           
-          {/* Left Column - Details */}
           <div className="space-y-12 lg:col-span-2">
             
-            {/* Overview */}
             <div className="prose-container">
               <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-6">Property Overview</h2>
               <p className="text-base md:text-[17px] text-foreground-600 leading-[2] font-light whitespace-pre-line">
@@ -229,7 +257,6 @@ export default function PropertyDetailPage() {
 
             <div className="w-full h-px bg-gradient-to-r from-black/10 via-black/5 to-transparent dark:from-white/10 dark:via-white/5" />
 
-            {/* Premium Amenities Cards */}
             {property.amenities && property.amenities.length > 0 && (
               <div>
                 <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-8">Premium Features</h2>
@@ -248,7 +275,6 @@ export default function PropertyDetailPage() {
 
             <div className="w-full h-px bg-gradient-to-r from-black/10 via-black/5 to-transparent dark:from-white/10 dark:via-white/5" />
 
-            {/* Location */}
             <div>
               <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
                 <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950">Neighborhood Map</h2>
@@ -282,7 +308,6 @@ export default function PropertyDetailPage() {
             </div>
           </div>
 
-          {/* Right Sidebar - Sticky Glassmorphic Card */}
           <div className="lg:col-span-1">
             <div className="sticky top-[7rem] space-y-6">
               
@@ -335,7 +360,6 @@ export default function PropertyDetailPage() {
                   </div>
                 </div>
                 
-                {/* Call To Action */}
                 <div className="mt-10">
                   <a
                     href="/contact"
@@ -347,7 +371,6 @@ export default function PropertyDetailPage() {
                 </div>
               </div>
 
-              {/* Trust Badge */}
               <div className="bg-primary-50/50 dark:bg-white/5 rounded-[2rem] border border-primary-100 dark:border-white/10 p-6 flex items-start gap-4">
                 <div className="w-10 h-10 rounded-full bg-primary-100 dark:bg-primary-500/20 flex items-center justify-center shrink-0">
                   <i className="ri-shield-star-line text-primary-600 text-xl" />
@@ -363,7 +386,6 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        {/* Related Properties */}
         {related.length > 0 && (
           <section className="mt-24 md:mt-32 pt-16 border-t border-black/5 dark:border-white/5">
             <div className="flex flex-col items-center text-center mb-12">

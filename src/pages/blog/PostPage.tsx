@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
+import SEO from '@/components/feature/SEO';
 import { fetchBlogPostBySlug, incrementBlogView } from '@/services/blogService';
 
 export default function PostPage() {
@@ -36,8 +37,42 @@ export default function PostPage() {
     );
   }
 
+  // Generate Google Article Schema
+  const articleSchema = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    "mainEntityOfPage": {
+      "@type": "WebPage",
+      "@id": `https://www.kenyaclassichomes.com/blog/${post.slug}`
+    },
+    "headline": post.title,
+    "description": post.excerpt,
+    "image": post.image,
+    "author": {
+      "@type": "Person",
+      "name": post.author || "Peter Njoroge"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Sedidy Homes",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://static.readdy.ai/image/fe5858082443eeff1e1c88cf3b867878/edd0819509b061b2db54eb05bd38ce9d.webp"
+      }
+    },
+    "datePublished": new Date(post.timestamp || post.date || Date.now()).toISOString(),
+  });
+
   return (
     <div className="min-h-screen bg-background-50">
+      <SEO 
+        title={`${post.title} | Sedidy Homes Insights`}
+        description={post.excerpt}
+        image={post.image}
+        type="article"
+        url={`https://www.kenyaclassichomes.com/blog/${post.slug}`}
+        schema={articleSchema}
+      />
       <Navbar />
       <div className="h-16 md:h-20" />
 
