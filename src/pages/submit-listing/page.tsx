@@ -153,7 +153,7 @@ export default function SubmitListingPage() {
 
                 <h2 className="text-lg font-semibold text-foreground-950 mb-4 border-b border-background-200 pb-3 mt-8">Basic Property Details</h2>
                 <div>
-                  <label className={labelClass}>Property Title / Catchphrase *</label>
+                  <label className={labelClass}>Property Title *</label>
                   <input type="text" name="title" required placeholder="e.g. Spacious 3 Bedroom in Kilimani" className={inputClass} />
                 </div>
                 

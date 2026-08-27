@@ -1,22 +1,21 @@
+// File: src/pages/contact/page.tsx
 import { useState } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import { faqItems, offices } from '@/mocks/siteData';
 
 export default function ContactPage() {
-  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formError, setFormError] = useState('');
+  const [formStatus, setFormStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setFormStatus('submitting');
-    setFormError('');
 
     const form = e.currentTarget;
     const formData = new FormData(form);
 
-    // Honeypot check
+    // Honeypot check for bots
     const honeypot = formData.get('company_alt');
     if (honeypot && String(honeypot).trim() !== '') {
       setFormStatus('success');
@@ -24,35 +23,28 @@ export default function ContactPage() {
       return;
     }
 
-    formData.delete('company_alt');
+    // Extract form values
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const phone = formData.get('phone') as string;
+    const inquiryType = formData.get('inquiry_type') as string;
+    const message = formData.get('message') as string;
 
-    try {
-      const response = await fetch('https://readdy.ai/api/form/d9fjhl9gav9vgaom0hjg', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-        body: new URLSearchParams(formData as unknown as Record<string, string>),
-      });
-      const responseText = await response.text();
-      let parsed;
-      try {
-        parsed = JSON.parse(responseText);
-      } catch {
-        parsed = null;
-      }
-      const serverMsg =
-        parsed?.meta?.message || parsed?.message || parsed?.meta?.detail || responseText;
+    // Structure the WhatsApp message using markdown
+    const whatsappMessage = `*New Website Inquiry* 🏠\n\n*Name:* ${name}\n*Email:* ${email}\n*Phone:* ${phone || 'Not provided'}\n*Inquiry Type:* ${inquiryType}\n\n*Message:*\n${message}`;
 
-      if (response.ok && parsed?.code === 'OK') {
-        setFormStatus('success');
-        form.reset();
-      } else {
-        setFormStatus('error');
-        setFormError(serverMsg || 'Something went wrong. Please try again.');
-      }
-    } catch {
-      setFormStatus('error');
-      setFormError('Network error. Please check your connection and try again.');
-    }
+    // Encode the message for a URL
+    const encodedMessage = encodeURIComponent(whatsappMessage);
+    
+    // Create the WhatsApp link (removing the + sign from the number for the API)
+    const whatsappUrl = `https://wa.me/254796476637?text=${encodedMessage}`;
+
+    // Open WhatsApp in a new tab
+    window.open(whatsappUrl, '_blank');
+
+    // Show success state on the website
+    setFormStatus('success');
+    form.reset();
   };
 
   return (
@@ -85,7 +77,7 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* Floating Concierge Cards - Removed negative margin for proper breathing room */}
+      {/* Floating Concierge Cards */}
       <section className="py-16 relative z-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -127,17 +119,17 @@ export default function ContactPage() {
                   Send Us a <span className="italic text-primary-400 font-light">Message</span>
                 </h2>
                 <p className="text-sm text-foreground-500 mb-10 font-light leading-relaxed">
-                  Fill out the form below and a dedicated real estate advisor will be in touch within 24 hours.
+                  Fill out the form below to instantly send a structured message to our advisory team via WhatsApp.
                 </p>
 
                 {formStatus === 'success' ? (
                   <div className="text-center py-16 bg-background-50 dark:bg-white/5 rounded-[2rem] border border-black/5 dark:border-white/5">
-                    <div className="w-16 h-16 bg-primary-100 dark:bg-primary-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-primary-600">
-                      <i className="ri-check-double-line text-3xl" />
+                    <div className="w-16 h-16 bg-green-100 dark:bg-green-500/20 rounded-full flex items-center justify-center mx-auto mb-6 text-green-600">
+                      <i className="ri-whatsapp-line text-3xl" />
                     </div>
-                    <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-2">Message Received</h3>
+                    <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-2">Redirecting to WhatsApp...</h3>
                     <p className="text-sm text-foreground-500 mb-8 max-w-xs mx-auto font-light leading-relaxed">
-                      Thank you for reaching out to Sedidy Homes. An advisor will contact you shortly.
+                      If the app didn't open automatically, please check your popup blocker settings.
                     </p>
                     <button
                       onClick={() => setFormStatus('idle')}
@@ -147,7 +139,7 @@ export default function ContactPage() {
                     </button>
                   </div>
                 ) : (
-                  <form onSubmit={handleSubmit} data-readdy-form className="space-y-6">
+                  <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                       <div>
                         <label className="block text-[11px] uppercase tracking-widest font-bold text-foreground-600 mb-2 pl-2">Full Name *</label>
@@ -189,11 +181,11 @@ export default function ContactPage() {
                           className="w-full px-5 py-3.5 rounded-2xl border border-black/10 dark:border-white/10 bg-background-50 dark:bg-white/5 text-foreground-950 text-sm focus:outline-none focus:ring-2 focus:ring-primary-400 focus:bg-white transition-all shadow-sm appearance-none cursor-pointer"
                         >
                           <option value="">Select an option</option>
-                          <option value="buying">Buying a Property</option>
-                          <option value="selling">Selling a Property</option>
-                          <option value="renting">Renting a Property</option>
-                          <option value="investment">Investment Advisory</option>
-                          <option value="other">General Inquiry</option>
+                          <option value="Buying a Property">Buying a Property</option>
+                          <option value="Selling a Property">Selling a Property</option>
+                          <option value="Renting a Property">Renting a Property</option>
+                          <option value="Investment Advisory">Investment Advisory</option>
+                          <option value="General Inquiry">General Inquiry</option>
                         </select>
                       </div>
                     </div>
@@ -221,13 +213,6 @@ export default function ContactPage() {
                       className="hp-field"
                     />
 
-                    {formStatus === 'error' && (
-                      <div className="flex items-center gap-3 text-red-600 text-sm bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/20 px-5 py-4 rounded-2xl">
-                        <i className="ri-error-warning-fill text-lg" />
-                        <span>{formError}</span>
-                      </div>
-                    )}
-
                     <div className="pt-2">
                       <button
                         type="submit"
@@ -237,12 +222,12 @@ export default function ContactPage() {
                         {formStatus === 'submitting' ? (
                           <>
                             <i className="ri-loader-4-line animate-spin text-lg" />
-                            Transmitting...
+                            Opening WhatsApp...
                           </>
                         ) : (
                           <>
-                            <i className="ri-send-plane-fill text-lg" />
-                            Send Message
+                            <i className="ri-whatsapp-line text-lg" />
+                            Send via WhatsApp
                           </>
                         )}
                       </button>
@@ -263,7 +248,6 @@ export default function ContactPage() {
 
               <div className="space-y-6 mb-8">
                 {offices.map((office) => (
-                  // Background changed to bg-white to stand out from bg-background-50
                   <div key={office.city} className="bg-white dark:bg-card rounded-[2.5rem] p-8 md:p-10 border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)]">
                     <div className="flex items-center justify-between mb-6">
                       <h3 className="font-heading text-2xl font-bold text-foreground-950">{office.city}</h3>
@@ -291,7 +275,7 @@ export default function ContactPage() {
                 ))}
               </div>
 
-              {/* Map - Updated to show Riverside Drive, Nairobi */}
+              {/* Map */}
               <div className="mt-auto rounded-[2.5rem] overflow-hidden border-4 border-white dark:border-card shadow-[0_20px_40px_rgba(0,0,0,0.08)] bg-white h-[320px]">
                 <iframe
                   title="Sedidy Homes Location"

@@ -1,4 +1,6 @@
+// File: src/components/feature/Navbar.tsx
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 const navLinks = [
   { label: 'Properties', href: '/properties' },
@@ -10,6 +12,12 @@ const navLinks = [
 
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
+
+  // Helper function to determine if the current path matches the link
+  const isActive = (href: string) => {
+    return location.pathname.startsWith(href);
+  };
 
   return (
     <>
@@ -34,15 +42,22 @@ export default function Navbar() {
 
           {/* Desktop Nav Links */}
           <div className="hidden lg:flex items-center gap-2">
-            {navLinks.map((link) => (
-              <a
-                key={link.label}
-                href={link.href}
-                className="px-4 py-2 text-[13px] uppercase tracking-wider font-semibold transition-all duration-300 rounded-full whitespace-nowrap text-foreground-500 hover:text-foreground-950 hover:bg-black/5"
-              >
-                {link.label}
-              </a>
-            ))}
+            {navLinks.map((link) => {
+              const active = isActive(link.href);
+              return (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  className={`px-4 py-2 text-[13px] uppercase tracking-wider font-semibold transition-all duration-300 rounded-full whitespace-nowrap ${
+                    active
+                      ? 'bg-black/5 dark:bg-white/10 text-foreground-950'
+                      : 'text-foreground-500 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
+                  }`}
+                >
+                  {link.label}
+                </a>
+              );
+            })}
           </div>
 
           {/* Right side Actions */}
@@ -79,16 +94,23 @@ export default function Navbar() {
         }`}
       >
         <div className="mx-auto max-w-[440px] backdrop-blur-2xl rounded-3xl border p-4 space-y-2 bg-white/80 border-white/40 shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)]">
-          {navLinks.map((link) => (
-            <a
-              key={link.label}
-              href={link.href}
-              className="block px-5 py-3.5 text-sm uppercase tracking-wide font-semibold rounded-2xl transition-colors text-foreground-600 hover:text-foreground-950 hover:bg-black/5"
-              onClick={() => setMobileOpen(false)}
-            >
-              {link.label}
-            </a>
-          ))}
+          {navLinks.map((link) => {
+            const active = isActive(link.href);
+            return (
+              <a
+                key={link.label}
+                href={link.href}
+                className={`block px-5 py-3.5 text-sm uppercase tracking-wide font-semibold rounded-2xl transition-colors ${
+                  active
+                    ? 'bg-black/5 dark:bg-white/10 text-foreground-950'
+                    : 'text-foreground-600 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
+                }`}
+                onClick={() => setMobileOpen(false)}
+              >
+                {link.label}
+              </a>
+            );
+          })}
           <div className="pt-3 pb-1 px-1">
             <a
               href="/list-with-us"
