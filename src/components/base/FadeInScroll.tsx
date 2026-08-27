@@ -26,8 +26,10 @@ export default function FadeInScroll({ children, delay = 0, className = '' }: Fa
         });
       },
       { 
-        threshold: 0.1, 
-        rootMargin: '0px 0px -50px 0px' // Triggers just before the element is fully in view
+        // Trigger the second ANY pixel of the element enters the boundary
+        threshold: 0, 
+        // Trigger the animation when the element is 200px BELOW the viewport
+        rootMargin: '0px 0px 200px 0px' 
       }
     );
 

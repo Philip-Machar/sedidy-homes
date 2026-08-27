@@ -366,7 +366,7 @@ export const testimonials = [
     name: 'Esther Chebet',
     role: 'Property Investor',
     image: 'https://picsum.photos/60/60?random=30',
-    text: 'Kenya Classics found me the perfect investment property. Their team was professional, transparent, and efficient throughout the entire process.',
+    text: 'Sedidy Homes found me the perfect investment property. Their team was professional, transparent, and efficient throughout the entire process.',
   },
   {
     id: 't2',
@@ -380,7 +380,7 @@ export const testimonials = [
     name: 'Amelia Kariuki',
     role: 'First-time Buyer',
     image: 'https://picsum.photos/60/60?random=32',
-    text: 'As a first-time buyer, I felt overwhelmed. The team at Kenya Classics guided me patiently and made the process smooth and enjoyable.',
+    text: 'As a first-time buyer, I felt overwhelmed. The team at Sedidy Homes guided me patiently and made the process smooth and enjoyable.',
   },
 ];
 

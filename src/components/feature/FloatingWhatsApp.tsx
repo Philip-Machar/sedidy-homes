@@ -12,7 +12,7 @@ export default function FloatingWhatsApp() {
       
       {/* Premium Tooltip */}
       <span className="absolute right-full mr-4 px-4 py-2 bg-foreground-950 text-white text-xs font-bold tracking-wide whitespace-nowrap rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none shadow-lg">
-        Chat with an Advisor
+        Chat with Sedidy Homes
         {/* Little triangle pointing to the button */}
         <span className="absolute top-1/2 -right-1.5 -translate-y-1/2 border-[6px] border-transparent border-l-foreground-950" />
       </span>
