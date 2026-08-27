@@ -76,7 +76,7 @@ export default function FeaturedProperties() {
                   className="inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-[0.15em] text-xs hover:bg-foreground-950 hover:text-white transition-all duration-300 group"
                 >
                   View All Hot Deals
-                  <i className="ri-arrow-down-line text-base group-hover:translate-y-1 transition-transform" />
+                  <i className="ri-arrow-right-line text-base group-hover:translate-y-1 transition-transform" />
                 </button>
               </div>
             )}
