@@ -1,3 +1,4 @@
+// File: src/pages/admin/UploadProperty.tsx
 import { useState, type FormEvent, type ChangeEvent } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
@@ -129,16 +130,16 @@ export default function UploadProperty() {
               </div>
               <h3 className="text-xl font-bold text-foreground-950 mb-2">Property Published Successfully!</h3>
               <p className="text-sm text-foreground-500 mb-6">Your listing is now saved in Firebase and visible to all visitors.</p>
-              <div className="flex justify-center gap-3">
+              <div className="flex flex-col sm:flex-row justify-center gap-3">
                 <button
                   onClick={() => setStatus('idle')}
-                  className="px-6 py-2.5 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors"
+                  className="px-6 py-3 sm:py-2.5 rounded-lg bg-primary-500 text-white text-sm font-medium hover:bg-primary-600 transition-colors w-full sm:w-auto"
                 >
                   Upload Another
                 </button>
                 <a
                   href="/properties"
-                  className="px-6 py-2.5 rounded-lg border border-background-200 text-foreground-700 text-sm font-medium hover:bg-background-100 transition-colors"
+                  className="px-6 py-3 sm:py-2.5 rounded-lg border border-background-200 text-foreground-700 text-sm font-medium hover:bg-background-100 transition-colors w-full sm:w-auto text-center"
                 >
                   View Listings
                 </a>
@@ -160,7 +161,7 @@ export default function UploadProperty() {
                 <div className="space-y-4">
                   <div>
                     <label className={labelClass}>Property Title *</label>
-                    <input type="text" name="title" required placeholder="e.g. Luxury 4-Bedroom Mansion in Karen" className={inputClass} />
+                    <input type="text" name="title" required placeholder="e.g. Luxury 4-Bedroom Villa in Watamu" className={inputClass} />
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
@@ -254,7 +255,7 @@ export default function UploadProperty() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>Upload Image Files</label>
+                    <label className={labelClass}>Upload Image Files (Select Multiple)</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -283,6 +284,11 @@ export default function UploadProperty() {
                   )}
 
                   <div>
+                    <label className={labelClass}>Or Provide Image URLs (Comma-separated)</label>
+                    <input type="text" name="imageUrl" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" className={inputClass} />
+                  </div>
+
+                  <div>
                     <label className={labelClass}>Property Description *</label>
                     <textarea
                       name="description"
@@ -300,11 +306,12 @@ export default function UploadProperty() {
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-4">
+              {/* Fix: Centered on mobile, right-aligned on desktop */}
+              <div className="flex justify-center sm:justify-end pt-4 mt-4">
                 <button
                   type="submit"
                   disabled={status === 'submitting'}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-3 rounded-lg bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 transition-colors disabled:opacity-70"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-3 w-full sm:w-auto rounded-lg bg-primary-500 text-white font-semibold text-sm hover:bg-primary-600 transition-colors disabled:opacity-70 shadow-sm"
                 >
                   {status === 'submitting' ? (
                     <>
