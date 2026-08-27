@@ -40,7 +40,7 @@ export default function WhyChooseUs() {
           <div className="relative mt-10 lg:mt-0">
             <div className="relative aspect-[4/5] md:aspect-square rounded-[2.5rem] overflow-hidden shadow-2xl">
               <img
-                src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?q=80&w=1000&auto=format&fit=crop"
+                src="https://img.magnific.com/premium-photo/group-three-black-men-stylish-suits-meeting-summer-park-african-americans-friends-hispanic-businessman-greeting-pose-teamwork-outdoors_175356-895.jpg"
                 alt="Sedidy Homes Excellence"
                 className="w-full h-full object-cover"
               />
