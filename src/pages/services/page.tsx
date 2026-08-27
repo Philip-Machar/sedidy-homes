@@ -1,3 +1,4 @@
+// File: src/pages/services/page.tsx
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import { services } from '@/mocks/siteData';
@@ -126,7 +127,6 @@ export default function ServicesPage() {
                 key={step.step}
                 className="relative bg-white dark:bg-card rounded-[2.5rem] p-8 border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_20px_40px_rgb(0,0,0,0.12)] transition-all duration-500 overflow-hidden group transform hover:-translate-y-2"
               >
-                {/* Massive Magazine-style Background Watermark */}
                 <span className="absolute -bottom-8 -right-4 text-[8rem] font-heading font-black text-black/[0.03] dark:text-white/[0.02] pointer-events-none select-none z-0 group-hover:scale-110 group-hover:text-primary-500/[0.05] transition-all duration-700">
                   {step.step}
                 </span>
@@ -139,7 +139,6 @@ export default function ServicesPage() {
                   <p className="text-sm text-foreground-500 leading-relaxed font-light">{step.description}</p>
                 </div>
                 
-                {/* Connecting Line between steps (Desktop only) */}
                 {index < processSteps.length - 1 && (
                   <div className="hidden lg:block absolute top-14 -right-4 w-8 h-px bg-gradient-to-r from-primary-200 to-transparent z-10" />
                 )}
@@ -154,8 +153,8 @@ export default function ServicesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
             
-            <div className="order-2 lg:order-1 relative">
-              <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] group">
+            <div className="order-2 lg:order-1 relative flex flex-col items-center lg:block">
+              <div className="relative aspect-[4/5] w-full rounded-[2.5rem] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.15)] group">
                 <img
                   src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop"
                   alt="Sedidy Homes Interior Consultation"
@@ -163,8 +162,8 @@ export default function ServicesPage() {
                 />
               </div>
               
-              {/* Floating Glass Card overlapping the image */}
-              <div className="absolute -right-4 md:-right-12 bottom-12 bg-white/90 dark:bg-card/90 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2rem] p-8 shadow-[0_30px_60px_rgba(0,0,0,0.12)] max-w-[280px] md:max-w-sm transform hover:-translate-y-2 transition-transform duration-500">
+              {/* Floating Glass Card overlapping the image - refined for mobile */}
+              <div className="relative -mt-16 lg:absolute lg:mt-0 lg:-right-12 lg:bottom-12 w-[90%] lg:w-auto bg-white/90 dark:bg-card/90 backdrop-blur-2xl border border-white/50 dark:border-white/10 rounded-[2rem] p-8 shadow-[0_30px_60px_rgba(0,0,0,0.12)] max-w-[280px] md:max-w-sm transform hover:-translate-y-2 transition-transform duration-500 z-10">
                 <div className="w-12 h-12 bg-accent-500 rounded-full flex items-center justify-center text-white mb-5 shadow-lg shadow-accent-500/30">
                   <i className="ri-hand-coin-line text-2xl" />
                 </div>
@@ -209,8 +208,8 @@ export default function ServicesPage() {
                   { icon: 'ri-scales-3-line', title: 'Legal Protection', desc: 'Rigorous due diligence on every transaction.' },
                   { icon: 'ri-line-chart-line', title: 'Market Insights', desc: 'Data-driven intelligence to maximize your ROI.' },
                 ].map((item) => (
-                  <div key={item.title} className="flex flex-col gap-4 group">
-                    <div className="w-14 h-14 rounded-2xl bg-background-50 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-colors duration-300 shadow-sm">
+                  <div key={item.title} className="flex items-start gap-4 group">
+                    <div className="w-14 h-14 shrink-0 rounded-2xl bg-background-50 dark:bg-white/5 border border-black/5 dark:border-white/5 flex items-center justify-center text-primary-500 group-hover:bg-primary-500 group-hover:text-white transition-colors duration-300 shadow-sm">
                       <i className={`${item.icon} text-2xl`} />
                     </div>
                     <div>
