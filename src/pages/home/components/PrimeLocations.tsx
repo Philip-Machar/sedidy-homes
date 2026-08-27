@@ -6,25 +6,25 @@ const LOCATIONS = [
     id: 'karen',
     name: 'Karen',
     description: 'Luxurious family homes and leafy compounds.',
-    image: 'https://images.unsplash.com/photo-1613977257363-707ba9348227?q=80&w=800&auto=format&fit=crop',
+    image: 'https://i.roamcdn.net/prop/brk/listing-thumb-400w/JvZKR0fP84y7QykoV4up7g/-/_1I6ruNDQ0MjI0szQEAA/26dad48e-c14e-4e92-927d-9e5d31b32306.jpg',
   },
   {
     id: 'runda',
     name: 'Runda',
     description: 'Exclusive estates and diplomatic residences.',
-    image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=800&auto=format&fit=crop',
+    image: 'https://img.jamesedition.com/listing_images/2025/09/18/07/24/55/d271b059-1458-41c5-b19d-eeb190f3a448/je/760x470xc.jpg',
   },
   {
     id: 'riverside',
     name: 'Riverside',
     description: 'Premium apartments and modern commercial hubs.',
-    image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=800&auto=format&fit=crop',
+    image: 'https://dezynbild.com/uploads/blog/0cL_12_02_36_affordable-housing-design.jpg',
   },
   {
     id: 'westlands',
     name: 'Westlands',
     description: 'Vibrant city living, penthouses, and business.',
-    image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=800&auto=format&fit=crop',
+    image: 'https://designassembly.co.ke/wp-content/uploads/2024/03/thevogue.jpg',
   },
 ];
 
@@ -94,7 +94,7 @@ export default function PrimeLocations() {
                       <i className="ri-arrow-right-up-line text-white" />
                     </div>
                   </div>
-                  <p className="text-white/70 text-sm line-clamp-2 font-light leading-relaxed">
+                  <p className="text-white text-sm line-clamp-2 font-light leading-relaxed">
                     {location.description}
                   </p>
                 </div>
