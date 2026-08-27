@@ -25,7 +25,7 @@ export default function WriteBlogPage() {
 
   const validatePost = () => {
     if (!title.trim()) { alert("Please provide an article title."); return false; }
-    if (!excerpt.trim()) { alert("Please provide a short excerpt."); return false; }
+    if (!excerpt.trim()) { alert("Please provide a one-sentence hook."); return false; }
     if (!content.trim()) { alert("Please write some content."); return false; }
     return true;
   };
@@ -44,7 +44,7 @@ export default function WriteBlogPage() {
       await createBlogPost({
         slug, 
         title, 
-        excerpt, 
+        excerpt, // Keeping the variable name excerpt to match your database schema
         category, 
         content, 
         status: postStatus,
@@ -113,9 +113,10 @@ export default function WriteBlogPage() {
           </div>
         </div>
 
+        {/* Updated Hook Field */}
         <div className="mb-10">
-          <label className="block text-[11px] uppercase tracking-widest font-bold text-foreground-600 mb-2 pl-2">Short Excerpt</label>
-          <textarea rows={3} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Write a compelling summary..." className="w-full px-5 py-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-card text-foreground-950 text-base font-light focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm resize-none" />
+          <label className="block text-[11px] uppercase tracking-widest font-bold text-foreground-600 mb-2 pl-2">Hook</label>
+          <textarea rows={2} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Write a compelling one-sentence hook..." className="w-full px-5 py-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-card text-foreground-950 text-base font-light focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm resize-none" />
         </div>
 
         <div>

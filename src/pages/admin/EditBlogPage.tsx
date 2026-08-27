@@ -45,7 +45,7 @@ export default function EditBlogPage() {
 
   const validatePost = () => {
     if (!title.trim()) { alert("Please provide an article title."); return false; }
-    if (!excerpt.trim()) { alert("Please provide a short excerpt."); return false; }
+    if (!excerpt.trim()) { alert("Please provide a one-sentence hook."); return false; }
     if (!content.trim()) { alert("Please write some content."); return false; }
     return true;
   };
@@ -91,7 +91,7 @@ export default function EditBlogPage() {
         <div className="flex items-center gap-3">
           <span className="text-xs font-bold text-foreground-400 mr-4 hidden sm:inline">{status}</span>
           <button onClick={() => savePostToFirebase('draft')} disabled={status.includes('ing...')} className="px-6 py-2.5 rounded-full bg-background-100 text-foreground-950 text-[11px] font-bold uppercase tracking-widest hover:bg-background-200 shadow-sm disabled:opacity-50">Save Draft</button>
-          <button onClick={() => savePostToFirebase('published')} disabled={status.includes('ing...')} className="px-6 py-2.5 rounded-full bg-primary-500 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-primary-600 shadow-md disabled:opacity-50">Publish Post</button>
+          <button onClick={() => savePostToFirebase('published')} disabled={status.includes('ing...')} className="px-6 py-2.5 rounded-full bg-primary-500 text-white text-[11px] font-bold uppercase tracking-widest hover:bg-primary-600 shadow-md disabled:opacity-50">Update Post</button>
         </div>
       </header>
 
@@ -122,9 +122,10 @@ export default function EditBlogPage() {
           </div>
         </div>
 
+        {/* Updated Hook Field */}
         <div className="mb-10">
-          <label className="block text-[11px] uppercase tracking-widest font-bold text-foreground-600 mb-2 pl-2">Short Excerpt</label>
-          <textarea rows={3} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} className="w-full px-5 py-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-card text-foreground-950 text-base font-light focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm resize-none" />
+          <label className="block text-[11px] uppercase tracking-widest font-bold text-foreground-600 mb-2 pl-2">Hook</label>
+          <textarea rows={2} value={excerpt} onChange={(e) => setExcerpt(e.target.value)} placeholder="Write a compelling one-sentence hook..." className="w-full px-5 py-4 rounded-2xl border border-black/5 dark:border-white/10 bg-white dark:bg-card text-foreground-950 text-base font-light focus:outline-none focus:ring-2 focus:ring-primary-400 shadow-sm resize-none" />
         </div>
 
         <div>
