@@ -6,8 +6,8 @@ import Footer from '@/components/feature/Footer';
 import PropertyCard from '@/pages/home/components/PropertyCard';
 import ImageGallery from '@/pages/property/components/ImageGallery';
 import SEO from '@/components/feature/SEO';
-import { type Property, featuredProperties } from '@/mocks/properties';
-import { fetchAllProperties } from '@/services/propertyService';
+import { type Property } from '@/mocks/properties';
+import { fetchPropertyById, fetchAllProperties } from '@/services/propertyService';
 
 export default function PropertyDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -23,14 +23,12 @@ export default function PropertyDetailPage() {
       
       setLoading(true);
       try {
-        const allFetched = await fetchAllProperties();
-        const allProperties = [...featuredProperties, ...allFetched];
-        
-        const foundProperty = allProperties.find(p => String(p.id) === String(id));
-        setProperty(foundProperty || null);
+        const foundProperty = await fetchPropertyById(id);
+        setProperty(foundProperty);
 
         if (foundProperty) {
-          const relatedProps = allProperties
+          const allFetched = await fetchAllProperties('published');
+          const relatedProps = allFetched
             .filter((p) => String(p.id) !== String(foundProperty.id))
             .filter((p) => p.type?.toLowerCase() === foundProperty.type?.toLowerCase())
             .slice(0, 4);
@@ -127,7 +125,6 @@ export default function PropertyDetailPage() {
     setShareOpen(false);
   };
 
-  // Generate Google Schema for this specific property
   const listingSchema = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "RealEstateListing",

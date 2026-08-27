@@ -1,9 +1,10 @@
+// File: src/pages/properties/page.tsx
 import { useState, useMemo, useEffect } from 'react';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
 import PropertyCard from '@/pages/home/components/PropertyCard';
 import FilterDropdown from '@/pages/properties/components/FilterDropdown';
-import { featuredProperties, propertyCategories, type Property } from '@/mocks/properties';
+import { propertyCategories, type Property } from '@/mocks/properties';
 import { fetchAllProperties } from '@/services/propertyService';
 
 const sortOptions = [
@@ -14,8 +15,6 @@ const sortOptions = [
 
 const transactionTypes = ['All', 'For Sale', 'For Rent'];
 const furnishingOptions = ['All Furnishing', 'Furnished', 'Unfurnished', 'Semi-Furnished'];
-const bedroomOptions = ['Bedrooms', '1', '2', '3', '4', '5+'];
-const priceRanges = ['All Prices', 'Under 5M', '5M - 15M', '15M - 50M', '50M+'];
 
 function parsePrice(price: any): number {
   if (!price) return 0;
@@ -32,8 +31,6 @@ export default function PropertiesPage() {
   const [sortBy, setSortBy] = useState('newest');
   const [transactionType, setTransactionType] = useState('All');
   const [furnishing, setFurnishing] = useState('All Furnishing');
-  const [bedrooms, setBedrooms] = useState('Bedrooms');
-  const [priceRange, setPriceRange] = useState('All Prices');
   const [visibleCount, setVisibleCount] = useState(12);
 
   useEffect(() => {
@@ -42,7 +39,6 @@ export default function PropertiesPage() {
       try {
         const fetchedProperties = await fetchAllProperties('published');
         if (mounted) {
-          // Strictly real properties, removing duplicates
           const unique = Array.from(new Map(fetchedProperties.map(p => [p.id, p])).values());
           setProperties(unique);
         }
@@ -112,8 +108,6 @@ export default function PropertiesPage() {
     setSortBy('newest');
     setTransactionType('All');
     setFurnishing('All Furnishing');
-    setBedrooms('Bedrooms');
-    setPriceRange('All Prices');
   };
 
   return (
@@ -121,7 +115,6 @@ export default function PropertiesPage() {
       <Navbar />
       <div className="h-16 md:h-20" />
 
-      {/* Premium Dark Hero Header */}
       <section className="relative overflow-hidden bg-black py-20 md:py-32">
         <div className="absolute inset-0 overflow-hidden">
           <div
@@ -146,12 +139,10 @@ export default function PropertiesPage() {
         </div>
       </section>
 
-      {/* Normal Scrolling Glassmorphic Filter Bar (Removed 'sticky top-*') */}
       <section className="relative z-30 py-6 md:py-8 bg-background-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="flex flex-col lg:flex-row gap-4 md:gap-5">
-            {/* Search Input (Pill Shaped) */}
             <div className="relative flex-1 lg:max-w-md group">
               <i className="ri-search-line absolute left-5 top-1/2 -translate-y-1/2 text-foreground-400 text-lg group-focus-within:text-primary-500 transition-colors" />
               <input
@@ -163,7 +154,6 @@ export default function PropertiesPage() {
               />
             </div>
 
-            {/* Filters (Pill Shaped) */}
             <div className="flex flex-wrap items-center gap-3 md:gap-4 flex-1">
               <FilterDropdown options={transactionTypes.map((t) => ({ label: t, value: t }))} value={transactionType} onChange={setTransactionType} />
               <FilterDropdown options={[{ label: 'All Types', value: 'All' }, ...propertyCategories.filter((c) => c !== 'All').map((c) => ({ label: c, value: c }))]} value={activeCategory} onChange={setActiveCategory} />
@@ -182,7 +172,6 @@ export default function PropertiesPage() {
         </div>
       </section>
 
-      {/* Property Grid */}
       <section className="py-12 md:py-16 bg-background-50/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           

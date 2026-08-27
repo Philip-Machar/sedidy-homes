@@ -71,6 +71,15 @@ export default function BlogPage() {
 
       {loading ? (
         <div className="py-32 text-center text-foreground-400"><i className="ri-loader-4-line animate-spin text-3xl" /></div>
+      ) : filtered.length === 0 ? (
+        <div className="text-center py-32 bg-white dark:bg-card rounded-[2.5rem] border border-black/5 dark:border-white/5 shadow-sm max-w-3xl mx-auto mb-16">
+          <i className="ri-quill-pen-line text-5xl text-foreground-300 mb-6 block" />
+          <h3 className="font-heading text-2xl font-bold text-foreground-950 mb-3">No Articles Found</h3>
+          <p className="text-foreground-500 text-sm max-w-md mx-auto mb-8">We haven't published any articles in this category yet. Check back soon for the latest insights.</p>
+          <button onClick={() => {setActiveCategory('All'); setSearchQuery('');}} className="px-8 py-3.5 bg-foreground-950 text-background-50 text-xs font-bold uppercase tracking-widest rounded-full hover:bg-primary-600 transition-all shadow-lg hover:-translate-y-1">
+            View All Articles
+          </button>
+        </div>
       ) : (
         <>
           {featured && (
@@ -116,14 +125,12 @@ export default function BlogPage() {
                 {visible.map((post) => (
                   <a key={post.id} href={`/blog/${post.slug}`} className="block group bg-white rounded-[2rem] overflow-hidden shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:-translate-y-2 transition-all flex flex-col h-full">
                     
-                    {/* --- Note: Removed the bg-gradient layer here so the image stays crystal clear --- */}
                     <div className="relative h-56 bg-background-100 overflow-hidden">
                       <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                       <div className="absolute top-4 left-4">
                         <span className="inline-block px-3 py-1.5 bg-white/40 text-black shadow-lg text-[10px] font-bold uppercase rounded-full backdrop-blur-md">{post.category}</span>
                       </div>
                     </div>
-                    {/* --------------------------------------------------------------------------------- */}
 
                     <div className="p-6 flex-1 flex flex-col">
                       <h3 className="font-heading text-xl font-bold text-foreground-950 mb-3 line-clamp-2 group-hover:text-primary-600">{post.title}</h3>
