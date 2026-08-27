@@ -21,6 +21,8 @@ export default function BlogDashboard() {
   const totalPosts = posts.length;
   const publishedPosts = posts.filter(p => p.status === 'published').length;
   const draftPosts = posts.filter(p => p.status === 'draft').length;
+  // Calculate true views dynamically
+  const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
 
   const handleDeleteConfirm = async () => {
     if (postToDelete) {
@@ -29,7 +31,6 @@ export default function BlogDashboard() {
         setPosts(posts.filter(post => post.id !== postToDelete));
       } catch (error) {
         console.error("Failed to delete post", error);
-        alert("Error deleting post.");
       }
       setPostToDelete(null);
     }
@@ -59,7 +60,7 @@ export default function BlogDashboard() {
             { label: 'Total Articles', value: totalPosts, icon: 'ri-article-line' },
             { label: 'Published', value: publishedPosts, icon: 'ri-checkbox-circle-line' },
             { label: 'Drafts', value: draftPosts, icon: 'ri-draft-line' },
-            { label: 'Total Views', value: '12.4k', icon: 'ri-eye-line' },
+            { label: 'Total Views', value: totalViews.toLocaleString(), icon: 'ri-eye-line' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white dark:bg-card rounded-[2rem] p-6 border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col">
               <div className="w-10 h-10 rounded-full bg-background-50 dark:bg-white/5 flex items-center justify-center text-primary-500 mb-4"><i className={`${stat.icon} text-lg`} /></div>
@@ -83,7 +84,7 @@ export default function BlogDashboard() {
                   <tr className="border-b border-black/5 dark:border-white/5 text-[10px] font-bold uppercase tracking-widest text-foreground-400">
                     <th className="px-8 py-5">Article</th>
                     <th className="px-8 py-5">Category</th>
-                    <th className="px-8 py-5">Date</th>
+                    <th className="px-8 py-5">Views</th>
                     <th className="px-8 py-5">Status</th>
                     <th className="px-8 py-5 text-right">Actions</th>
                   </tr>
@@ -96,12 +97,12 @@ export default function BlogDashboard() {
                           <img src={post.image} alt={post.title} className="w-12 h-12 rounded-xl object-cover shadow-sm" />
                           <div>
                             <p className="text-sm font-bold text-foreground-950 line-clamp-1">{post.title}</p>
-                            <p className="text-xs text-foreground-500 mt-0.5">{post.author}</p>
+                            <p className="text-xs text-foreground-500 mt-0.5">{post.date}</p>
                           </div>
                         </div>
                       </td>
                       <td className="px-8 py-4"><span className="inline-block px-3 py-1 bg-background-100 text-[10px] font-bold uppercase rounded-full">{post.category}</span></td>
-                      <td className="px-8 py-4 text-xs font-medium text-foreground-600">{post.date}</td>
+                      <td className="px-8 py-4 text-xs font-medium text-foreground-600">{post.views || 0}</td>
                       <td className="px-8 py-4">
                         {post.status === 'draft' ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-yellow-50 text-yellow-600 text-[10px] font-bold uppercase rounded-full"><span className="w-1.5 h-1.5 rounded-full bg-yellow-500" />Draft</span>
@@ -110,9 +111,14 @@ export default function BlogDashboard() {
                         )}
                       </td>
                       <td className="px-8 py-4 text-right">
-                        <button onClick={() => setPostToDelete(post.id)} className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-foreground-500 hover:text-red-500 hover:border-red-200 shadow-sm transition-all" title="Delete">
-                          <i className="ri-delete-bin-line text-sm" />
-                        </button>
+                        <div className="flex items-center justify-end gap-2">
+                          <button onClick={() => navigate(`/admin/edit-blog/${post.id}`)} className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-foreground-500 hover:text-primary-600 hover:border-primary-200 shadow-sm transition-all" title="Edit">
+                            <i className="ri-edit-line text-sm" />
+                          </button>
+                          <button onClick={() => setPostToDelete(post.id)} className="w-8 h-8 rounded-full bg-white border border-black/10 flex items-center justify-center text-foreground-500 hover:text-red-500 hover:border-red-200 shadow-sm transition-all" title="Delete">
+                            <i className="ri-delete-bin-line text-sm" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

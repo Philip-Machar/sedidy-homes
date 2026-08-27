@@ -1,5 +1,5 @@
 // File: src/services/blogService.ts
-import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp } from 'firebase/firestore';
+import { collection, addDoc, getDocs, getDoc, doc, updateDoc, deleteDoc, query, orderBy, where, serverTimestamp, increment } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db, storage } from '@/lib/firebase';
 import { blogPosts as initialMockBlogs } from '@/mocks/siteData';
@@ -18,10 +18,27 @@ export async function uploadBlogImageToStorage(file: File): Promise<string> {
 export async function createBlogPost(blogData: any): Promise<string> {
   const docRef = await addDoc(collection(db, BLOGS_COLLECTION), {
     ...blogData,
+    views: 0, // Initialize real view counter
     createdAt: serverTimestamp(),
-    timestamp: Date.now(), // Fallback for reliable client-side sorting
+    timestamp: Date.now(),
   });
   return docRef.id;
+}
+
+export async function updateBlogPost(id: string, blogData: any): Promise<void> {
+  const docRef = doc(db, BLOGS_COLLECTION, id);
+  await updateDoc(docRef, {
+    ...blogData,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function incrementBlogView(id: string): Promise<void> {
+  // Only increment real Firebase documents, not the hardcoded mock data
+  if (!id.startsWith('b')) {
+    const docRef = doc(db, BLOGS_COLLECTION, id);
+    await updateDoc(docRef, { views: increment(1) });
+  }
 }
 
 export async function fetchAllBlogPosts(status: 'published' | 'draft' | 'all' = 'all'): Promise<any[]> {
@@ -38,13 +55,12 @@ export async function fetchAllBlogPosts(status: 'published' | 'draft' | 'all' = 
       firestoreBlogs = firestoreBlogs.filter((p: any) => p.status === status);
     }
 
-    // Append mock data for UI completeness if needed, but mark them as published
-    const formattedMocks = initialMockBlogs.map(mock => ({ ...mock, status: 'published', timestamp: new Date(mock.date).getTime() }));
+    const formattedMocks = initialMockBlogs.map(mock => ({ ...mock, status: 'published', timestamp: new Date(mock.date).getTime(), views: 0 }));
     
     return [...firestoreBlogs, ...formattedMocks].sort((a, b) => b.timestamp - a.timestamp);
   } catch (error) {
     console.error('Error fetching blogs from Firebase:', error);
-    return initialMockBlogs.map(mock => ({ ...mock, status: 'published', timestamp: new Date(mock.date).getTime() }));
+    return initialMockBlogs.map(mock => ({ ...mock, status: 'published', timestamp: new Date(mock.date).getTime(), views: 0 }));
   }
 }
 
@@ -60,14 +76,22 @@ export async function fetchBlogPostBySlug(slug: string): Promise<any | null> {
   } catch (error) {
     console.error('Error fetching blog by slug:', error);
   }
+  return initialMockBlogs.find((p) => p.slug === slug) || null;
+}
 
-  // Fallback to mock data
-  const fallback = initialMockBlogs.find((p) => p.slug === slug);
-  return fallback || null;
+export async function fetchBlogPostById(id: string): Promise<any | null> {
+  try {
+    const docSnap = await getDoc(doc(db, BLOGS_COLLECTION, id));
+    if (docSnap.exists()) {
+      return { id: docSnap.id, ...docSnap.data() };
+    }
+  } catch (error) {
+    console.error('Error fetching blog by ID:', error);
+  }
+  return initialMockBlogs.find((p) => p.id === id) || null;
 }
 
 export async function deleteBlogPost(id: string): Promise<void> {
-  // If it's a mock data ID (e.g. 'b1'), we can't delete it from Firestore
   if (!id.startsWith('b')) {
     const docRef = doc(db, BLOGS_COLLECTION, id);
     await deleteDoc(docRef);
