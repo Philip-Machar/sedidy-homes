@@ -17,7 +17,8 @@ import EditProperty from "../pages/admin/EditProperty";
 import BlogDashboard from "../pages/admin/BlogDashboard";
 import WriteBlogPage from "../pages/admin/WriteBlogPage";
 import EditBlogPage from "../pages/admin/EditBlogPage";
-import AdminDashboard from "../pages/admin/Dashboard"; // <-- Import the Hub
+import AdminDashboard from "../pages/admin/Dashboard";
+import AdminRoute from "../components/feature/AdminRoute"; // <-- Import the Gatekeeper
 
 const routes: RouteObject[] = [
   { path: "/", element: <Home /> },
@@ -30,15 +31,15 @@ const routes: RouteObject[] = [
   { path: "/contact", element: <ContactPage /> },
   { path: "/list-with-us", element: <SubmitListingPage /> },
   
-  // Admin Routes
-  { path: "/admin", element: <AdminDashboard /> }, // <-- Add the Hub route here
-  { path: "/admin/upload-property", element: <UploadProperty /> },
-  { path: "/admin/review-listings", element: <ReviewListings /> },
-  { path: "/admin/manage-listings", element: <ManageListings /> }, 
-  { path: "/admin/edit-property/:id", element: <EditProperty /> }, 
-  { path: "/admin/blog", element: <BlogDashboard /> },             
-  { path: "/admin/write-blog", element: <WriteBlogPage /> },       
-  { path: "/admin/edit-blog/:id", element: <EditBlogPage /> }, 
+  // Admin Routes - All wrapped in the AdminRoute gatekeeper
+  { path: "/admin", element: <AdminRoute><AdminDashboard /></AdminRoute> },
+  { path: "/admin/upload-property", element: <AdminRoute><UploadProperty /></AdminRoute> },
+  { path: "/admin/review-listings", element: <AdminRoute><ReviewListings /></AdminRoute> },
+  { path: "/admin/manage-listings", element: <AdminRoute><ManageListings /></AdminRoute> }, 
+  { path: "/admin/edit-property/:id", element: <AdminRoute><EditProperty /></AdminRoute> }, 
+  { path: "/admin/blog", element: <AdminRoute><BlogDashboard /></AdminRoute> },             
+  { path: "/admin/write-blog", element: <AdminRoute><WriteBlogPage /></AdminRoute> },       
+  { path: "/admin/edit-blog/:id", element: <AdminRoute><EditBlogPage /></AdminRoute> }, 
   
   { path: "*", element: <NotFound /> },
 ];
