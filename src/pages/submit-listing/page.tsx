@@ -241,7 +241,7 @@ export default function SubmitListingPage() {
                 </div>
 
                 <div>
-                  <label className={labelClass}>Upload Photos (Select Multiple) *</label>
+                  <label className={labelClass}>Upload Photos *</label>
                   <input
                     type="file"
                     accept="image/*"

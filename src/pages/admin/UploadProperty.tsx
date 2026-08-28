@@ -56,7 +56,7 @@ export default function UploadProperty() {
       }
 
       if (finalImageUrls.length === 0) {
-        throw new Error('Please select at least one image file or provide image URLs.');
+        throw new Error('Please select at least one image file.');
       }
 
       const amenitiesArray = (formData.get('amenities') as string)
@@ -255,7 +255,7 @@ export default function UploadProperty() {
                 </h2>
                 <div className="space-y-4">
                   <div>
-                    <label className={labelClass}>Upload Image Files (Select Multiple)</label>
+                    <label className={labelClass}>Upload Image Files</label>
                     <input
                       type="file"
                       accept="image/*"
@@ -282,11 +282,6 @@ export default function UploadProperty() {
                       ))}
                     </div>
                   )}
-
-                  <div>
-                    <label className={labelClass}>Or Provide Image URLs (Comma-separated)</label>
-                    <input type="text" name="imageUrl" placeholder="https://example.com/image1.jpg, https://example.com/image2.jpg" className={inputClass} />
-                  </div>
 
                   <div>
                     <label className={labelClass}>Property Description *</label>

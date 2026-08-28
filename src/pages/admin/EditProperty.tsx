@@ -255,7 +255,7 @@ export default function EditProperty() {
                   </div>
 
                   <div>
-                    <label className={labelClass}>Replace Images (Select Multiple)</label>
+                    <label className={labelClass}>Replace Images</label>
                     <input
                       type="file"
                       accept="image/*"

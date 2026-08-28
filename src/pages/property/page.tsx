@@ -58,9 +58,49 @@ export default function PropertyDetailPage() {
 
   const images = useMemo(() => {
     if (!property) return [];
-    if (property.images && property.images.length > 0) return property.images;
-    return property.image ? [property.image, property.image, property.image] : [];
+    if (Array.isArray(property.images) && property.images.length > 0) return property.images;
+    return property.image ? [property.image] : [];
   }, [property]);
+
+  // Safe Date parsing for Firestore Timestamps, Strings, or Numbers
+  const datePostedISO = useMemo(() => {
+    try {
+      const rawDate = (property as any)?.createdAt;
+      if (!rawDate) return new Date().toISOString();
+      if (typeof rawDate?.toDate === 'function') return rawDate.toDate().toISOString();
+      if (rawDate instanceof Date) return rawDate.toISOString();
+      const parsed = new Date(rawDate);
+      if (!isNaN(parsed.getTime())) return parsed.toISOString();
+      return new Date().toISOString();
+    } catch {
+      return new Date().toISOString();
+    }
+  }, [property]);
+
+  const rawMapInput = ((property as any)?.mapLocation || property?.location || '').trim();
+  let mapIframeSrc = '';
+  let externalMapLink = '';
+
+  const isUrl = /^https?:\/\//i.test(rawMapInput);
+  const isIframe = rawMapInput.toLowerCase().startsWith('<iframe') && rawMapInput.includes('src="');
+  const isEmbedUrl = rawMapInput.startsWith('https://www.google.com/maps/embed');
+
+  if (isIframe) {
+    const match = rawMapInput.match(/src="([^"]+)"/);
+    mapIframeSrc = match ? match[1] : '';
+  } else if (isEmbedUrl) {
+    mapIframeSrc = rawMapInput;
+  } else if (isUrl) {
+    externalMapLink = rawMapInput;
+    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(property?.location || '')}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  } else {
+    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(rawMapInput || property?.location || 'Nairobi, Kenya')}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
+  }
+
+  const copyLink = () => {
+    navigator.clipboard.writeText(window.location.href);
+    setShareOpen(false);
+  };
 
   if (loading) {
     return (
@@ -100,49 +140,24 @@ export default function PropertyDetailPage() {
     );
   }
 
-  const rawMapInput = ((property as any).mapLocation || property.location || '').trim();
-  let mapIframeSrc = '';
-  let externalMapLink = '';
-
-  const isUrl = /^https?:\/\//i.test(rawMapInput);
-  const isIframe = rawMapInput.toLowerCase().startsWith('<iframe') && rawMapInput.includes('src="');
-  const isEmbedUrl = rawMapInput.startsWith('https://www.google.com/maps/embed');
-
-  if (isIframe) {
-    const match = rawMapInput.match(/src="([^"]+)"/);
-    mapIframeSrc = match ? match[1] : '';
-  } else if (isEmbedUrl) {
-    mapIframeSrc = rawMapInput;
-  } else if (isUrl) {
-    externalMapLink = rawMapInput;
-    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(property.location || '')}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-  } else {
-    mapIframeSrc = `https://maps.google.com/maps?q=${encodeURIComponent(rawMapInput)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
-  }
-
-  const copyLink = () => {
-    navigator.clipboard.writeText(window.location.href);
-    setShareOpen(false);
-  };
-
   const listingSchema = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "RealEstateListing",
-    "name": property.title,
-    "description": property.description,
-    "image": images[0] || property.image,
+    "name": property.title || "Luxury Property",
+    "description": property.description || "",
+    "image": images[0] || property.image || "",
     "url": `https://www.kenyaclassichomes.com/properties/${property.id}`,
-    "datePosted": (property as any).createdAt ? new Date((property as any).createdAt).toISOString() : new Date().toISOString(),
+    "datePosted": datePostedISO,
     "offers": {
       "@type": "Offer",
-      "price": property.price?.replace(/,/g, ''),
+      "price": String(property.price || '').replace(/,/g, ''),
       "priceCurrency": property.currency || "KES",
       "availability": "https://schema.org/InStock",
       "itemOffered": {
         "@type": "Apartment",
-        "name": property.title,
-        "numberOfRooms": property.beds,
-        "numberOfBathroomsTotal": property.baths,
+        "name": property.title || "Property",
+        "numberOfRooms": property.beds || 0,
+        "numberOfBathroomsTotal": property.baths || 0,
       }
     }
   });
@@ -150,8 +165,8 @@ export default function PropertyDetailPage() {
   return (
     <div className="min-h-screen bg-background-50">
       <SEO 
-        title={`${property.title} | Sedidy Homes`}
-        description={property.description?.substring(0, 160) + '...'}
+        title={`${property.title || 'Property'} | Sedidy Homes`}
+        description={(property.description || '').substring(0, 160) + '...'}
         image={images[0] || property.image}
         url={`https://www.kenyaclassichomes.com/properties/${property.id}`}
         schema={listingSchema}
@@ -161,7 +176,8 @@ export default function PropertyDetailPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
         
-        <div className="flex items-center justify-between mb-8 animate-fade-up">
+        {/* FIX: Added relative and z-50 here to ensure the dropdown overlays the text below */}
+        <div className="relative z-50 flex items-center justify-between mb-8 animate-fade-up">
           <a
             href="/properties"
             className="inline-flex items-center gap-2 px-5 py-2.5 bg-white/60 dark:bg-black/20 backdrop-blur-md border border-black/5 dark:border-white/10 rounded-full text-xs font-bold uppercase tracking-widest text-foreground-600 hover:text-foreground-950 hover:bg-white dark:hover:bg-black/40 transition-all shadow-sm"
@@ -180,7 +196,7 @@ export default function PropertyDetailPage() {
             </button>
             
             {shareOpen && (
-              <div className="absolute right-0 top-full mt-3 w-56 bg-white/90 dark:bg-card/90 backdrop-blur-2xl rounded-3xl border border-black/5 dark:border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.12)] z-40 p-2 animate-[dropdown-in_0.15s_ease-out]">
+              <div className="absolute right-0 top-full mt-3 w-56 bg-white dark:bg-card/90 backdrop-blur-2xl rounded-3xl border border-black/5 dark:border-white/10 shadow-[0_20px_40px_rgba(0,0,0,0.12)] z-40 p-2 animate-[dropdown-in_0.15s_ease-out]">
                 <button
                   onClick={copyLink}
                   className="w-full text-left px-5 py-3 rounded-2xl text-[13px] font-semibold text-foreground-700 hover:bg-foreground-50 dark:hover:bg-white/5 hover:text-foreground-950 transition-colors flex items-center gap-3"
@@ -202,7 +218,7 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        <div className="mb-10 text-center md:text-left animate-fade-up-delayed">
+        <div className="relative z-10 mb-10 text-center md:text-left animate-fade-up-delayed">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
             <span className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase tracking-[0.2em] text-white shadow-sm ${statusColor}`}>
               {statusLabel}
@@ -227,7 +243,7 @@ export default function PropertyDetailPage() {
 
           <div className="flex flex-col md:flex-row md:items-end gap-4 md:gap-8">
             <div className="flex items-baseline justify-center md:justify-start gap-1.5">
-              <span className="text-lg font-medium text-foreground-500">{property.currency}</span>
+              <span className="text-lg font-medium text-foreground-500">{property.currency || 'KES'}</span>
               <span className="text-4xl md:text-5xl font-bold text-primary-600 tracking-tight">
                 {property.price}
               </span>
@@ -239,7 +255,7 @@ export default function PropertyDetailPage() {
           </div>
         </div>
 
-        <ImageGallery images={images} title={property.title} />
+        <ImageGallery images={images} title={property.title || 'Property'} />
 
         <div className="grid gap-10 lg:grid-cols-3 lg:items-start mt-12 md:mt-16 animate-fade-up-delayed-2">
           
@@ -254,7 +270,7 @@ export default function PropertyDetailPage() {
 
             <div className="w-full h-px bg-gradient-to-r from-black/10 via-black/5 to-transparent dark:from-white/10 dark:via-white/5" />
 
-            {property.amenities && property.amenities.length > 0 && (
+            {Array.isArray(property.amenities) && property.amenities.length > 0 && (
               <div>
                 <h2 className="font-heading text-2xl md:text-3xl font-bold text-foreground-950 mb-8">Premium Features</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
