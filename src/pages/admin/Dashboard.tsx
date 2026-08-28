@@ -3,19 +3,9 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
-import { seedDatabase } from '@/utils/seedDatabase';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
-  const [seeding, setSeeding] = useState(false);
-
-  const handleSeed = async () => {
-    if (window.confirm("Are you sure you want to upload all 36 mock properties to Firebase?")) {
-      setSeeding(true);
-      await seedDatabase();
-      setSeeding(false);
-    }
-  };
 
   const adminModules = [
     {
