@@ -6,25 +6,25 @@ const LOCATIONS = [
     id: 'karen',
     name: 'Karen',
     description: 'Luxurious family homes and leafy compounds.',
-    image: 'https://i.roamcdn.net/prop/brk/listing-thumb-400w/JvZKR0fP84y7QykoV4up7g/-/_1I6ruNDQ0MjI0szQEAA/26dad48e-c14e-4e92-927d-9e5d31b32306.jpg',
+    image: 'https://avenuevaluers.co.ke/wp-content/uploads/2025/10/maxresdefault-1.jpg'
+  },
+  {
+    id: 'westlands',
+    name: 'Westlands',
+    description: 'Vibrant city living, penthouses, and business.',
+    image: 'https://cf.bstatic.com/xdata/images/hotel/max1024x768/623174198.jpg?k=a5f578b7a7117f88a85ed028127bec8b604fee86fdd101222c96752c9899a802&o=',
   },
   {
     id: 'runda',
     name: 'Runda',
     description: 'Exclusive estates and diplomatic residences.',
-    image: 'https://img.jamesedition.com/listing_images/2025/09/18/07/24/55/d271b059-1458-41c5-b19d-eeb190f3a448/je/760x470xc.jpg',
+    image: 'https://www.homelinkafrica.co.ke/wp-content/uploads/2025/11/Ultra-Luxury-Modern-6-Bedroom-House-in-Runda-Homelink-Africa-Properties.jpeg',
   },
   {
     id: 'riverside',
     name: 'Riverside',
     description: 'Premium apartments and modern commercial hubs.',
     image: 'https://dezynbild.com/uploads/blog/0cL_12_02_36_affordable-housing-design.jpg',
-  },
-  {
-    id: 'westlands',
-    name: 'Westlands',
-    description: 'Vibrant city living, penthouses, and business.',
-    image: 'https://designassembly.co.ke/wp-content/uploads/2024/03/thevogue.jpg',
   },
 ];
 
