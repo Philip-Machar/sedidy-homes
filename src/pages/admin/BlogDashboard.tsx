@@ -21,7 +21,6 @@ export default function BlogDashboard() {
   const totalPosts = posts.length;
   const publishedPosts = posts.filter(p => p.status === 'published').length;
   const draftPosts = posts.filter(p => p.status === 'draft').length;
-  const totalViews = posts.reduce((sum, post) => sum + (post.views || 0), 0);
 
   const handleDeleteConfirm = async () => {
     if (postToDelete) {
@@ -60,7 +59,6 @@ export default function BlogDashboard() {
             { label: 'Total Articles', value: totalPosts, icon: 'ri-article-line' },
             { label: 'Published', value: publishedPosts, icon: 'ri-checkbox-circle-line' },
             { label: 'Drafts', value: draftPosts, icon: 'ri-draft-line' },
-            { label: 'Total Views', value: totalViews.toLocaleString(), icon: 'ri-eye-line' },
           ].map((stat) => (
             <div key={stat.label} className="bg-white dark:bg-card rounded-3xl sm:rounded-[2rem] p-5 sm:p-6 border border-black/5 dark:border-white/5 shadow-[0_8px_30px_rgb(0,0,0,0.04)] flex flex-col items-center sm:items-start text-center sm:text-left">
               <div className="w-10 h-10 rounded-full bg-background-50 dark:bg-white/5 flex items-center justify-center text-primary-500 mb-3 sm:mb-4"><i className={`${stat.icon} text-lg`} /></div>

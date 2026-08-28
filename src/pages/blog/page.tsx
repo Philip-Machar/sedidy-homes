@@ -139,6 +139,18 @@ export default function BlogPage() {
                   </a>
                 ))}
               </div>
+
+              {hasMore && (
+                <div className="mt-12 md:mt-16 flex justify-center">
+                  <button
+                    onClick={() => setVisibleCount((c) => c + 6)}
+                    className="inline-flex items-center justify-center gap-3 px-10 py-4 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-[0.15em] text-[11px] hover:bg-foreground-950 hover:text-white transition-all duration-300 group shadow-sm bg-white"
+                  >
+                    Load More Articles
+                    <i className="ri-arrow-down-line text-sm group-hover:translate-y-1 transition-transform" />
+                  </button>
+                </div>
+              )}
             </div>
           </section>
         </>
