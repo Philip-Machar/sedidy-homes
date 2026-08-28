@@ -130,15 +130,24 @@ export default function Footer() {
             
             <div className="w-px h-4 bg-black/10 dark:bg-white/10 mx-1" />
 
+            {/* UPDATED SOCIALS BLOCK */}
             {[
-              { icon: 'ri-facebook-fill', label: 'Facebook' },
-              { icon: 'ri-instagram-line', label: 'Instagram' },
-              { icon: 'ri-twitter-x-line', label: 'Twitter' },
-              { icon: 'ri-linkedin-fill', label: 'LinkedIn' }
+              { 
+                icon: 'ri-facebook-fill', 
+                label: 'Facebook', 
+                href: 'https://www.facebook.com/p/Realtor-SedidyDidy-homes-100083258680948/' 
+              },
+              { 
+                icon: 'ri-instagram-line', 
+                label: 'Instagram', 
+                href: 'https://www.instagram.com/sedidy_homes/' 
+              }
             ].map((social) => (
               <a 
                 key={social.label}
-                href="#" 
+                href={social.href} 
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-white dark:bg-white/5 border border-black/5 dark:border-white/10 flex items-center justify-center text-foreground-500 hover:bg-foreground-950 hover:text-white hover:border-foreground-950 transition-all duration-300 shadow-sm" 
                 aria-label={social.label}
               >
