@@ -41,15 +41,7 @@ export default function ExploreProperties() {
             </h2>
             <div className="w-12 h-1 bg-accent-500 rounded-full mt-6 hidden md:block mx-auto md:mx-0" />
           </div>
-          
-          {/* View All Button - Desktop Only (Hidden on mobile) */}
-          <a
-            href="/properties"
-            className="hidden md:inline-flex items-center justify-center gap-3 px-8 py-3.5 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-widest text-[11px] hover:bg-foreground-950 hover:text-white transition-all duration-300 group shrink-0 md:mb-4 shadow-sm"
-          >
-            View All Properties
-            <i className="ri-arrow-right-line text-sm group-hover:translate-x-1 transition-transform" />
-          </a>
+          {/* The top button has been completely removed to avoid forcing the user to scroll back up */}
         </div>
 
         {/* Pill-Shaped Glass Categories - Centered on Mobile, Left-aligned on Desktop */}
@@ -91,12 +83,12 @@ export default function ExploreProperties() {
           </div>
         )}
 
-        {/* View All Button - Mobile Only (Appears directly below the 6 properties) */}
+        {/* View All Button - Now universally visible at the bottom for all screen sizes */}
         {!loading && filtered.length > 0 && (
-          <div className="mt-10 flex justify-center md:hidden">
+          <div className="mt-10 md:mt-16 flex justify-center">
             <a
               href="/properties"
-              className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-8 py-4 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-widest text-[11px] hover:bg-foreground-950 hover:text-white transition-all duration-300 group shadow-sm bg-white"
+              className="inline-flex items-center justify-center gap-3 w-full sm:w-auto px-10 py-4 rounded-full border border-foreground-200 text-foreground-950 font-bold uppercase tracking-[0.15em] text-[11px] hover:bg-foreground-950 hover:text-white transition-all duration-300 group shadow-sm bg-white"
             >
               View All Properties
               <i className="ri-arrow-right-line text-sm group-hover:translate-x-1 transition-transform" />
