@@ -51,7 +51,7 @@ export default function Navbar() {
                   className={`px-4 py-2 text-[13px] uppercase tracking-wider font-semibold transition-all duration-300 rounded-full whitespace-nowrap ${
                     active
                       ? 'bg-black/5 dark:bg-white/10 text-foreground-950'
-                      : 'text-foreground-500 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
+                      : 'text-foreground-800 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
                   }`}
                 >
                   {link.label}
@@ -103,7 +103,7 @@ export default function Navbar() {
                 className={`block px-5 py-3.5 text-sm uppercase tracking-wide font-semibold rounded-2xl transition-colors ${
                   active
                     ? 'bg-black/5 dark:bg-white/10 text-foreground-950'
-                    : 'text-foreground-600 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
+                    : 'text-foreground-800 hover:text-foreground-950 hover:bg-black/5 dark:hover:bg-white/5'
                 }`}
                 onClick={() => setMobileOpen(false)}
               >

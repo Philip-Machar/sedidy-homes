@@ -1,3 +1,4 @@
+// File: src/pages/home/components/HeroSection.tsx
 import { useState } from 'react';
 
 export default function HeroSection() {
@@ -47,7 +48,7 @@ export default function HeroSection() {
           <span className="italic font-light text-primary-400">luxury living</span>
         </h1>
 
-        <p className="animate-fade-up-delayed-2 text-base md:text-lg text-white/80 max-w-2xl mx-auto leading-relaxed font-light mb-12 drop-shadow-md">
+        <p className="animate-fade-up-delayed-2 text-base md:text-lg text-white max-w-2xl mx-auto leading-relaxed font-light mb-12 drop-shadow-lg">
           Explore Kenya’s most exclusive residential and commercial real estate portfolio, curated for those with uncompromising taste.
         </p>
 
