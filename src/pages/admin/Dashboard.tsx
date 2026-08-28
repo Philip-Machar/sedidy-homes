@@ -1,10 +1,21 @@
 // File: src/pages/admin/Dashboard.tsx
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Navbar from '@/components/feature/Navbar';
 import Footer from '@/components/feature/Footer';
+import { seedDatabase } from '@/utils/seedDatabase';
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
+  const [seeding, setSeeding] = useState(false);
+
+  const handleSeed = async () => {
+    if (window.confirm("Are you sure you want to upload all 36 mock properties to Firebase?")) {
+      setSeeding(true);
+      await seedDatabase();
+      setSeeding(false);
+    }
+  };
 
   const adminModules = [
     {
@@ -25,7 +36,7 @@ export default function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background-50">
+    <div className="min-h-screen bg-background-50 flex flex-col">
       <Navbar />
       <div className="h-16 md:h-20" />
 
@@ -46,7 +57,7 @@ export default function AdminDashboard() {
       </section>
 
       {/* Modules Grid */}
-      <section className="py-16 md:py-24">
+      <section className="py-16 md:py-24 flex-1">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="space-y-16">
             {adminModules.map((section) => (
@@ -81,6 +92,21 @@ export default function AdminDashboard() {
               </div>
             ))}
           </div>
+
+          {/* TEMPORARY DEVELOPER TOOL: Bulk import the 36 properties */}
+          <div className="mt-20 pt-10 border-t border-black/5 text-center">
+            <button 
+              onClick={handleSeed}
+              disabled={seeding}
+              className="px-6 py-2 bg-red-50 text-red-600 border border-red-200 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-red-100 transition-colors disabled:opacity-50"
+            >
+              {seeding ? <><i className="ri-loader-4-line animate-spin mr-2" /> Seeding Database...</> : <><i className="ri-database-2-line mr-2" /> Developer: Seed Database (36 Items)</>}
+            </button>
+            <p className="text-[10px] text-foreground-400 mt-3 max-w-md mx-auto">
+              Clicking this will upload the 36 pre-written properties directly to Firebase. Once complete, you can remove this button and use "Manage Listings" to edit their images.
+            </p>
+          </div>
+
         </div>
       </section>
 
