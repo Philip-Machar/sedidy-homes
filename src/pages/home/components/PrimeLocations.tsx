@@ -24,7 +24,7 @@ const LOCATIONS = [
     id: 'riverside',
     name: 'Riverside',
     description: 'Premium apartments and modern commercial hubs.',
-    image: 'https://dezynbild.com/uploads/blog/0cL_12_02_36_affordable-housing-design.jpg',
+    image: 'https://ownitkenya.com/wp-content/uploads/2025/09/Apartments-for-Sale-in-Kilimani.jpeg',
   },
 ];
 
